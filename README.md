@@ -168,7 +168,7 @@ tourplanner/
 ## 👥 Team
 
 - Lukas Fink
-- (Add teammate)
+- Franziska Brandfellner
 
 ---
 
