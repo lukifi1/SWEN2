@@ -1,0 +1,20 @@
+<div *ngIf="tour as t">
+  <h2>{{ t.name }}</h2>
+
+  <img [src]="t.image" alt="Tour image" class="detail-image" />
+
+  <p>{{ t.description }}</p>
+
+  <ul>
+    <li>From: {{ t.from }}</li>
+    <li>To: {{ t.to }}</li>
+    <li>Distance: {{ t.distance }}</li>
+  </ul>
+
+  <div class="map-placeholder">
+    Map placeholder
+  </div>
+
+  <button (click)="edit.emit()">Edit</button>
+  <button (click)="delete.emit()">Delete</button>
+</div>

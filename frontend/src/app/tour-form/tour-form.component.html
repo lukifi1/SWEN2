@@ -1,0 +1,12 @@
+<div class="form-card">
+  <h3>{{ editMode ? 'Edit Tour' : 'Create Tour' }}</h3>
+
+  <form #form="ngForm" (ngSubmit)="save.emit(form.value)">
+    <input name="name" [(ngModel)]="tour.name" required />
+    <input name="from" [(ngModel)]="tour.from" required />
+    <input name="to" [(ngModel)]="tour.to" required />
+
+    <button type="submit" [disabled]="form.invalid ?? true">Save</button>
+    <button type="button" (click)="cancel.emit()">Cancel</button>
+  </form>
+</div>

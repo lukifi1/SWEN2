@@ -1,0 +1,28 @@
+<div class="panel-header">
+  <h2>Tours</h2>
+  <app-action-button
+    label="New Tour"
+    type="button"
+    variant="primary"
+    (buttonClick)="create.emit()">
+  </app-action-button>
+</div>
+
+<div *ngIf="tours.length === 0" class="empty-state">
+  No tours available yet.
+</div>
+
+<div class="tour-list">
+  <div
+    class="tour-card"
+    *ngFor="let tour of tours"
+    [class.active]="selectedTour?.id === tour.id"
+    (click)="select.emit(tour)">
+    <img [src]="tour.image" [alt]="tour.name" class="tour-thumb" />
+    <div>
+      <h3>{{ tour.name }}</h3>
+      <p>{{ tour.from }} → {{ tour.to }}</p>
+      <small>{{ tour.transportType }} • {{ tour.distance }} km</small>
+    </div>
+  </div>
+</div>
