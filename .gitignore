@@ -1,0 +1,18 @@
+# Node
+node_modules/
+dist/
+.angular/
+
+# Angular cache
+.cache/
+
+# Java
+target/
+*.class
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
