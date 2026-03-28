@@ -4,11 +4,12 @@ import { Tour } from './shared/models/tour.model';
 import { TourListComponent } from './tours/tours.component';
 import { TourFormComponent } from './tour-form/tour-form.component';
 import { TourDetailComponent } from './tour-detail/tour-detail.component';
+import {ActionButtonComponent} from './shared/action-button/action-button.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, TourListComponent, TourFormComponent, TourDetailComponent],
+  imports: [CommonModule, TourListComponent, TourFormComponent, TourDetailComponent, ActionButtonComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -77,5 +78,15 @@ export class AppComponent {
     if (!this.selectedTour && this.tours.length > 0) {
       this.selectedTour = this.tours[0];
     }
+  }
+
+  onLogin() {
+    console.log('Navigate to Login');
+    // Implement login logic or routing here
+  }
+
+  onRegister() {
+    console.log('Navigate to Register');
+    // Implement registration logic or routing here
   }
 }

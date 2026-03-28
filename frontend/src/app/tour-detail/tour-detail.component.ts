@@ -1,32 +1,71 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, AfterViewInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tour, TourLog } from '../shared/models/tour.model';
 import { ActionButtonComponent } from '../shared/action-button/action-button.component';
 import { TourLogsComponent } from '../tour-logs/tour-logs.component';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-tour-detail',
   standalone: true,
   imports: [CommonModule, ActionButtonComponent, TourLogsComponent],
-  templateUrl: 'tour-detail.component.html',
-  styles: [`
-    h2, h3, p { margin: 0 0 12px 0; }
-    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .details-card { border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; background: #ffffff; }
-    .detail-image { width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; }
-    .detail-list { padding-left: 18px; margin: 0; line-height: 1.6; }
-    .map-placeholder { height: 280px; border: 2px dashed #94a3b8; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #f8fafc; color: #475569; }
-    @media (max-width: 900px) { .details-grid { grid-template-columns: 1fr; } }
-  `]
+  templateUrl: './tour-detail.component.html',
+  styleUrls: ['./tour-detail.component.css']
 })
-export class TourDetailComponent {
+export class TourDetailComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input({ required: true }) tour!: Tour;
 
   @Output() editTour = new EventEmitter<void>();
   @Output() deleteTour = new EventEmitter<void>();
   @Output() tourUpdated = new EventEmitter<Tour>();
 
+  private map!: L.Map;
+
+  // Lifecycle: After HTML is ready
+  ngAfterViewInit(): void {
+    this.initMap();
+  }
+
+  // Lifecycle: When switching between different tours
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tour'] && !changes['tour'].firstChange && this.map) {
+      // Logic to reset map view or update markers when tour changes
+      this.map.setView([48.2082, 16.3738], 12);
+    }
+    if (this.map) {
+      setTimeout(() => {
+        this.map.invalidateSize();
+      }, 100);
+    }
+  }
+
+  private initMap(): void {
+    // 1. Initialize map
+    this.map = L.map('map', {
+      center: [48.2082, 16.3738], // Default to Vienna
+      zoom: 12
+    });
+
+    // 2. Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    // Small fix: Leaflet sometimes misses container size on init
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 100);
+  }
+
   updateLogs(updatedLogs: TourLog[]) {
     this.tourUpdated.emit({ ...this.tour, logs: updatedLogs });
+  }
+
+  // Lifecycle: Clean up to prevent memory leaks
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+    }
   }
 }

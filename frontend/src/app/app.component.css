@@ -65,6 +65,38 @@ body {
   color: #6b7280;
 }
 
+.header-main {
+  display: flex;
+  justify-content: space-between; /* Pushes brand left, nav right */
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.auth-menu {
+  display: flex;
+  gap: 12px; /* Spacing between Login and Register */
+  margin-top: 5px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Ensure the container stays centered if you added the .container class earlier */
+.container {
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;

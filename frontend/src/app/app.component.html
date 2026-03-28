@@ -1,8 +1,26 @@
 <div class="app-shell">
   <!-- Wrap header content to align with the grid below -->
   <header class="header container">
-    <h1>TourPlanner</h1>
-    <p>Plan, manage and review your personal tours.</p>
+    <div class="header-main">
+      <div class="brand">
+        <h1>TourPlanner</h1>
+        <p>Plan, manage and review your personal tours.</p>
+      </div>
+
+      <nav class="auth-menu">
+        <app-action-button
+          label="Login"
+          variant="secondary"
+          (buttonClick)="onLogin()">
+        </app-action-button>
+
+        <app-action-button
+          label="Register"
+          variant="primary"
+          (buttonClick)="onRegister()">
+        </app-action-button>
+      </nav>
+    </div>
   </header>
 
   <div class="layout container">
