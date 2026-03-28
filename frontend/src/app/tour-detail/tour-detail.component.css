@@ -1,0 +1,18 @@
+.detail-image {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-list {
+  padding-left: 18px;
+}
+
+.details-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  background: white;
+}

@@ -1,26 +1,40 @@
-<div class="layout">
+<div class="app-shell">
+  <!-- Wrap header content to align with the grid below -->
+  <header class="header container">
+    <h1>TourPlanner</h1>
+    <p>Plan, manage and review your personal tours.</p>
+  </header>
 
-  <!-- LEFT -->
-  <app-tours
-    [tours]="tours"
-    [selectedTour]="selectedTour"
-    (select)="selectTour($event)"
-    (create)="openCreateTourForm()">
-  </app-tours>
+  <div class="layout container">
+    <section class="panel sidebar">
+      <app-tour-list
+        [tours]="tours"
+        [selectedTourId]="selectedTour?.id"
+        (tourSelected)="selectTour($event)"
+        (createTourClicked)="openCreateTourForm()">
+      </app-tour-list>
+    </section>
 
-  <!-- RIGHT -->
-  <app-tour-detail
-    [tour]="selectedTour"
-    (edit)="openEditTourForm()"
-    (delete)="deleteTour()">
-  </app-tour-detail>
+    <section class="panel content">
+      <app-tour-form
+        *ngIf="showTourForm"
+        [tour]="selectedTour"
+        [editMode]="editMode"
+        (save)="saveTour($event)"
+        (cancel)="cancelTourForm()">
+      </app-tour-form>
 
-  <app-tour-form
-    *ngIf="showTourForm"
-    [tour]="tourForm"
-    [editMode]="editMode"
-    (save)="saveTour($event)"
-    (cancel)="cancelTourForm()">
-  </app-tour-form>
+      <app-tour-detail
+        *ngIf="!showTourForm && selectedTour"
+        [tour]="selectedTour"
+        (editTour)="openEditTourForm()"
+        (deleteTour)="deleteTour()"
+        (tourUpdated)="updateTourState($event)">
+      </app-tour-detail>
 
+      <div *ngIf="!showTourForm && !selectedTour" class="empty-state">
+        Please create or select a tour.
+      </div>
+    </section>
+  </div>
 </div>

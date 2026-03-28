@@ -1,12 +1,19 @@
 <div class="form-card">
   <h3>{{ editMode ? 'Edit Tour' : 'Create Tour' }}</h3>
-
-  <form #form="ngForm" (ngSubmit)="save.emit(form.value)">
-    <input name="name" [(ngModel)]="tour.name" required />
-    <input name="from" [(ngModel)]="tour.from" required />
-    <input name="to" [(ngModel)]="tour.to" required />
-
-    <button type="submit" [disabled]="form.invalid ?? true">Save</button>
-    <button type="button" (click)="cancel.emit()">Cancel</button>
+  <form #tourNgForm="ngForm" (ngSubmit)="submitForm()">
+    <div class="form-grid">
+      <div><label>Name</label><input type="text" name="name" [(ngModel)]="tourForm.name" #tourName="ngModel" required /></div>
+      <div><label>Transport Type</label><input type="text" name="transportType" [(ngModel)]="tourForm.transportType" required /></div>
+      <div><label>From</label><input type="text" name="from" [(ngModel)]="tourForm.from" required /></div>
+      <div><label>To</label><input type="text" name="to" [(ngModel)]="tourForm.to" required /></div>
+      <div><label>Distance (km)</label><input type="number" name="distance" [(ngModel)]="tourForm.distance" min="1" required /></div>
+      <div><label>Estimated Time (h)</label><input type="number" name="estimatedTime" [(ngModel)]="tourForm.estimatedTime" min="1" required /></div>
+      <div class="full-width"><label>Image URL</label><input type="text" name="image" [(ngModel)]="tourForm.image" required /></div>
+      <div class="full-width"><label>Description</label><textarea name="description" [(ngModel)]="tourForm.description" required></textarea></div>
+    </div>
+    <div class="button-row">
+      <app-action-button label="Save Tour" type="submit" variant="primary" [disabled]="!!tourNgForm.invalid"></app-action-button>
+      <app-action-button label="Cancel" type="button" variant="secondary" (buttonClick)="cancel.emit()"></app-action-button>
+    </div>
   </form>
 </div>

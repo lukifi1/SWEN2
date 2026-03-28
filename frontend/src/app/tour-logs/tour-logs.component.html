@@ -1,0 +1,33 @@
+<div class="form-card">
+  <h3>{{ editingLogId ? 'Edit Tour Log' : 'Add Tour Log' }}</h3>
+  <form #logNgForm="ngForm" (ngSubmit)="saveLog()">
+    <div class="form-grid">
+      <div><label>Date/Time</label><input type="datetime-local" name="dateTime" [(ngModel)]="logForm.dateTime" required /></div>
+      <div><label>Difficulty (1-5)</label><input type="number" name="difficulty" [(ngModel)]="logForm.difficulty" min="1" max="5" required /></div>
+      <div><label>Total Distance (km)</label><input type="number" name="totalDistance" [(ngModel)]="logForm.totalDistance" min="1" required /></div>
+      <div><label>Total Time (h)</label><input type="number" name="totalTime" [(ngModel)]="logForm.totalTime" min="1" required /></div>
+      <div><label>Rating (1-5)</label><input type="number" name="rating" [(ngModel)]="logForm.rating" min="1" max="5" required /></div>
+      <div class="full-width"><label>Comment</label><textarea name="comment" [(ngModel)]="logForm.comment" required></textarea></div>
+    </div>
+    <div class="button-row">
+      <app-action-button [label]="editingLogId ? 'Update Log' : 'Add Log'" type="submit" variant="primary" [disabled]="!!logNgForm.invalid"></app-action-button>
+      <app-action-button label="Reset" type="button" variant="secondary" (buttonClick)="resetLogForm()"></app-action-button>
+    </div>
+  </form>
+</div>
+
+<div class="form-card">
+  <h3>Tour Logs</h3>
+  <div *ngIf="logs.length === 0" class="empty-state">No logs available for this tour.</div>
+  <div class="log-list">
+    <div class="log-card" *ngFor="let log of logs">
+      <p><strong>Date:</strong> {{ log.dateTime }}</p>
+      <p><strong>Comment:</strong> {{ log.comment }}</p>
+      <p><strong>Rating:</strong> {{ log.rating }}/5</p>
+      <div class="button-row">
+        <app-action-button label="Edit" variant="secondary" (buttonClick)="editLog(log)"></app-action-button>
+        <app-action-button label="Delete" variant="danger" (buttonClick)="deleteLog(log.id)"></app-action-button>
+      </div>
+    </div>
+  </div>
+</div>

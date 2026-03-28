@@ -51,7 +51,7 @@ Backend follows a **layered architecture**:
 - Manage tour logs
 - Full-text search
 
-### Tour Data
+### TourModel Data
 Each tour includes:
 - Name
 - Description
@@ -60,7 +60,7 @@ Each tour includes:
 - Transport type
 - Route information (map)
 
-### Tour Logs
+### TourModel Logs
 Each log includes:
 - Date/time
 - Comment
