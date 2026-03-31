@@ -9,7 +9,7 @@ The goal of TourPlanner is to provide a simple and intuitive way to organize out
 
 ---
 
-## 🧱 Tech Stack
+##  Tech Stack
 
 ### Frontend
 - Angular
@@ -30,7 +30,7 @@ The goal of TourPlanner is to provide a simple and intuitive way to organize out
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```text
 Angular (Frontend)  <--HTTP/JSON-->  Spring Boot (Backend)  --> PostgreSQL
@@ -43,7 +43,7 @@ Backend follows a **layered architecture**:
 
 ---
 
-## ✨ Features
+##  Features
 
 ### Core Features
 - User registration & login
@@ -77,7 +77,7 @@ Each log includes:
 
 ---
 
-## ⚙️ Setup Instructions
+##  Setup Instructions
 
 ### 1. Clone Repository
 
@@ -133,7 +133,7 @@ spring:
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 - Backend: JUnit
 - Minimum: 20+ unit tests
@@ -146,7 +146,7 @@ Run tests:
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 tourplanner/
@@ -157,7 +157,7 @@ tourplanner/
 
 ---
 
-## 📌 Development Notes
+##  Development Notes
 
 - Configuration is externalized (no secrets in code)
 - Git history documents development progress
@@ -165,17 +165,14 @@ tourplanner/
 
 ---
 
-## 👥 Team
+##  Team
 
 - Lukas Fink
 - Franziska Brandfellner
 
 ---
 
-## 📊 Status
+##  Status
 
-🚧 Work in progress
+ Work in progress
 
-
----
-**AI generated**
