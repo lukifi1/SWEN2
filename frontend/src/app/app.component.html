@@ -35,7 +35,7 @@
 
     <section class="panel content">
       <app-tour-form
-        *ngIf="showTourForm"
+        *ngIf="showTourForm()"
         [tour]="selectedTour"
         [editMode]="editMode"
         (save)="saveTour($event)"
@@ -43,14 +43,14 @@
       </app-tour-form>
 
       <app-tour-detail
-        *ngIf="!showTourForm && selectedTour"
+        *ngIf="!showTourForm() && selectedTour"
         [tour]="selectedTour"
         (editTour)="openEditTourForm()"
         (deleteTour)="deleteTour()"
         (tourUpdated)="updateTourState($event)">
       </app-tour-detail>
 
-      <div *ngIf="!showTourForm && !selectedTour" class="empty-state">
+      <div *ngIf="!showTourForm() && !selectedTour" class="empty-state">
         Please create or select a tour.
       </div>
     </section>

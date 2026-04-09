@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tour } from './shared/models/tour.model';
 import { TourListComponent } from './tours/tours.component';
 import { TourFormComponent } from './tour-form/tour-form.component';
 import { TourDetailComponent } from './tour-detail/tour-detail.component';
 import {ActionButtonComponent} from './shared/action-button/action-button.component';
+
 
 @Component({
   selector: 'app-root',
@@ -30,23 +32,23 @@ export class AppComponent {
   ];
 
   selectedTour: Tour | null = this.tours[0];
-  showTourForm = false;
+  showTourForm = signal(false);
   editMode = false;
 
   selectTour(tour: Tour) {
     this.selectedTour = tour;
-    this.showTourForm = false;
+    this.showTourForm.set(false);
   }
 
   openCreateTourForm() {
     this.editMode = false;
     this.selectedTour = null;
-    this.showTourForm = true;
+    this.showTourForm.set(true);
   }
 
   openEditTourForm() {
     this.editMode = true;
-    this.showTourForm = true;
+    this.showTourForm.set(true);
   }
 
   saveTour(tour: Tour) {
@@ -57,14 +59,14 @@ export class AppComponent {
       this.tours.push(tour);
     }
     this.updateTourState(tour);
-    this.showTourForm = false;
+    this.showTourForm.set(false);
   }
 
   deleteTour() {
     if (!this.selectedTour) return;
     this.tours = this.tours.filter(t => t.id !== this.selectedTour!.id);
     this.selectedTour = this.tours.length > 0 ? this.tours[0] : null;
-    this.showTourForm = false;
+    this.showTourForm.set(false);
   }
 
   updateTourState(updatedTour: Tour) {
@@ -74,7 +76,7 @@ export class AppComponent {
   }
 
   cancelTourForm() {
-    this.showTourForm = false;
+    this.showTourForm.set(false);
     if (!this.selectedTour && this.tours.length > 0) {
       this.selectedTour = this.tours[0];
     }
