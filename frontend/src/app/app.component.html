@@ -34,25 +34,29 @@
     </section>
 
     <section class="panel content">
-      <app-tour-form
-        *ngIf="showTourForm()"
-        [tour]="selectedTour"
-        [editMode]="editMode()"
-        (save)="saveTour($event)"
-        (cancel)="cancelTourForm()">
-      </app-tour-form>
+      @if (showTourForm()) {
+        <app-tour-form
+          [tour]="selectedTour"
+          [editMode]="editMode()"
+          (save)="saveTour($event)"
+          (cancel)="cancelTourForm()">
+        </app-tour-form>
+      }
 
-      <app-tour-detail
-        *ngIf="!showTourForm() && selectedTour"
-        [tour]="selectedTour"
-        (editTour)="openEditTourForm()"
-        (deleteTour)="deleteTour()"
-        (tourUpdated)="updateTourState($event)">
-      </app-tour-detail>
+      @if (!showTourForm() && selectedTour) {
+        <app-tour-detail
+          [tour]="selectedTour"
+          (editTour)="openEditTourForm()"
+          (deleteTour)="deleteTour()"
+          (tourUpdated)="updateTourState($event)">
+        </app-tour-detail>
+      }
 
-      <div *ngIf="!showTourForm() && !selectedTour" class="empty-state">
-        Please create or select a tour.
-      </div>
+      @if (!showTourForm() && !selectedTour) {
+        <div class="empty-state">
+          Please create or select a tour.
+        </div>
+      }
     </section>
   </div>
 </div>

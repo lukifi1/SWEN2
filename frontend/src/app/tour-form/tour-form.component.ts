@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Tour } from '../shared/models/tour.model';
 import { ActionButtonComponent } from '../shared/action-button/action-button.component';
@@ -7,7 +7,7 @@ import { ActionButtonComponent } from '../shared/action-button/action-button.com
 @Component({
   selector: 'app-tour-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ActionButtonComponent],
+  imports: [FormsModule, ActionButtonComponent],
   templateUrl: './tour-form.component.html',
 })
 export class TourFormComponent implements OnChanges {

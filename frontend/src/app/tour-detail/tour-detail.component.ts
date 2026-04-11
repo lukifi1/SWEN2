@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, AfterViewInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Tour, TourLog } from '../shared/models/tour.model';
 import { ActionButtonComponent } from '../shared/action-button/action-button.component';
 import { TourLogsComponent } from '../tour-logs/tour-logs.component';
@@ -8,7 +8,7 @@ import * as L from 'leaflet';
 @Component({
   selector: 'app-tour-detail',
   standalone: true,
-  imports: [CommonModule, ActionButtonComponent, TourLogsComponent],
+  imports: [ActionButtonComponent, TourLogsComponent],
   templateUrl: './tour-detail.component.html',
   styleUrls: ['./tour-detail.component.css']
 })

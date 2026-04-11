@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TourLog } from '../shared/models/tour.model';
 import { ActionButtonComponent } from '../shared/action-button/action-button.component';
@@ -7,7 +7,7 @@ import { ActionButtonComponent } from '../shared/action-button/action-button.com
 @Component({
   selector: 'app-tour-logs',
   standalone: true,
-  imports: [CommonModule, FormsModule, ActionButtonComponent],
+  imports: [FormsModule, ActionButtonComponent],
   templateUrl: './tour-logs.component.html',
   styles: [`
     .log-list { display: flex; flex-direction: column; gap: 12px; }

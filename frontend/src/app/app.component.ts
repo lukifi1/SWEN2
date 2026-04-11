@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Tour } from './shared/models/tour.model';
 import { TourListComponent } from './tours/tours.component';
 import { TourFormComponent } from './tour-form/tour-form.component';
@@ -10,7 +10,7 @@ import {ActionButtonComponent} from './shared/action-button/action-button.compon
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, TourListComponent, TourFormComponent, TourDetailComponent, ActionButtonComponent],
+  imports: [TourListComponent, TourFormComponent, TourDetailComponent, ActionButtonComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

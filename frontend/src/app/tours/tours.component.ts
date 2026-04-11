@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Tour } from '../shared/models/tour.model';
 import { ActionButtonComponent } from '../shared/action-button/action-button.component';
 
 @Component({
   selector: 'app-tour-list',
   standalone: true,
-  imports: [CommonModule, ActionButtonComponent],
+  imports: [ActionButtonComponent],
   templateUrl: './tours.component.html',
   styles: [`
     h2, h3, p { margin: 0; }

@@ -18,16 +18,20 @@
 
 <div class="form-card">
   <h3>Tour Logs</h3>
-  <div *ngIf="logs.length === 0" class="empty-state">No logs available for this tour.</div>
+  @if (logs.length === 0) {
+    <div class="empty-state">No logs available for this tour.</div>
+  }
   <div class="log-list">
-    <div class="log-card" *ngFor="let log of logs">
-      <p><strong>Date:</strong> {{ log.dateTime }}</p>
-      <p><strong>Comment:</strong> {{ log.comment }}</p>
-      <p><strong>Rating:</strong> {{ log.rating }}/5</p>
-      <div class="button-row">
-        <app-action-button label="Edit" variant="secondary" (buttonClick)="editLog(log)"></app-action-button>
-        <app-action-button label="Delete" variant="danger" (buttonClick)="deleteLog(log.id)"></app-action-button>
+    @for (log of logs; track log) {
+      <div class="log-card">
+        <p><strong>Date:</strong> {{ log.dateTime }}</p>
+        <p><strong>Comment:</strong> {{ log.comment }}</p>
+        <p><strong>Rating:</strong> {{ log.rating }}/5</p>
+        <div class="button-row">
+          <app-action-button label="Edit" variant="secondary" (buttonClick)="editLog(log)"></app-action-button>
+          <app-action-button label="Delete" variant="danger" (buttonClick)="deleteLog(log.id)"></app-action-button>
+        </div>
       </div>
-    </div>
+    }
   </div>
 </div>
