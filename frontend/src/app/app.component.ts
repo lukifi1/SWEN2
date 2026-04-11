@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tour } from './shared/models/tour.model';
 import { TourListComponent } from './tours/tours.component';
@@ -33,7 +32,7 @@ export class AppComponent {
 
   selectedTour: Tour | null = this.tours[0];
   showTourForm = signal(false);
-  editMode = false;
+  editMode = signal(false);
 
   selectTour(tour: Tour) {
     this.selectedTour = tour;
@@ -41,18 +40,18 @@ export class AppComponent {
   }
 
   openCreateTourForm() {
-    this.editMode = false;
+    this.editMode.set(false);
     this.selectedTour = null;
     this.showTourForm.set(true);
   }
 
   openEditTourForm() {
-    this.editMode = true;
+    this.editMode.set(true);
     this.showTourForm.set(true);
   }
 
   saveTour(tour: Tour) {
-    if (this.editMode) {
+    if (this.editMode()) {
       const index = this.tours.findIndex(t => t.id === tour.id);
       if (index !== -1) this.tours[index] = tour;
     } else {

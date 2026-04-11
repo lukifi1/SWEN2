@@ -37,7 +37,7 @@
       <app-tour-form
         *ngIf="showTourForm()"
         [tour]="selectedTour"
-        [editMode]="editMode"
+        [editMode]="editMode()"
         (save)="saveTour($event)"
         (cancel)="cancelTourForm()">
       </app-tour-form>
