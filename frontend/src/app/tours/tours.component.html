@@ -3,19 +3,22 @@
   <app-action-button label="New Tour" variant="primary" (buttonClick)="createTourClicked.emit()"></app-action-button>
 </div>
 
-<div *ngIf="tours.length === 0" class="empty-state">No tours available yet.</div>
+@if (tours.length === 0) {
+  <div class="empty-state">No tours available yet.</div>
+}
 
 <div class="tour-list">
-  <div
-    class="tour-card"
-    *ngFor="let tour of tours"
-    [class.active]="selectedTourId === tour.id"
-    (click)="tourSelected.emit(tour)">
-    <img [src]="tour.image" [alt]="tour.name" class="tour-thumb" />
-    <div>
-      <h3>{{ tour.name }}</h3>
-      <p>{{ tour.from }} → {{ tour.to }}</p>
-      <small>{{ tour.transportType }} • {{ tour.distance }} km</small>
+  @for (tour of tours; track tour) {
+    <div
+      class="tour-card"
+      [class.active]="selectedTourId === tour.id"
+      (click)="tourSelected.emit(tour)">
+      <img [src]="tour.image" [alt]="tour.name" class="tour-thumb" />
+      <div>
+        <h3>{{ tour.name }}</h3>
+        <p>{{ tour.from }} → {{ tour.to }}</p>
+        <small>{{ tour.transportType }} • {{ tour.distance }} km</small>
+      </div>
     </div>
-  </div>
+  }
 </div>
