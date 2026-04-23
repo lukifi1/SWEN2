@@ -28,6 +28,6 @@ export class TourFormComponent implements OnChanges {
   }
 
   createEmptyTour(): Tour {
-    return { id: 0, name: '', description: '', from: '', to: '', transportType: '', distance: 0, estimatedTime: 0, image: '', logs: [] };
+    return { id: 0, name: '', description: '', from: '', to: '', transportType: '', distance: 0, estimatedTime: 0, image: '', logs: [], longitude: 0, latitude: 0};
   }
 }

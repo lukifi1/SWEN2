@@ -25,7 +25,9 @@ export class AppComponent {
       distance: 12,
       estimatedTime: 4,
       image: 'https://vcdn.bergfex.at/images/resized/10/85bcadb24995b410_711033be33617f95.jpg',
-      logs: [{ id: 1, dateTime: '2026-03-20T09:30', comment: 'Very nice weather and easy trail.', difficulty: 2, totalDistance: 12, totalTime: 4, rating: 5 }]
+      logs: [{ id: 1, dateTime: '2026-03-20T09:30', comment: 'Very nice weather and easy trail.', difficulty: 2, totalDistance: 12, totalTime: 4, rating: 5 }],
+      longitude: 48.2082,
+      latitude: 16.3738
     }
   ];
 

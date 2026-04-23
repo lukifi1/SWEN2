@@ -19,4 +19,6 @@ export interface Tour {
   estimatedTime: number;
   image: string;
   logs: TourLog[];
+  longitude: number;
+  latitude: number;
 }

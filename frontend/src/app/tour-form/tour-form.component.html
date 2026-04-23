@@ -8,6 +8,8 @@
       <div><label>To</label><input type="text" name="to" [(ngModel)]="tourForm.to" required /></div>
       <div><label>Distance (km)</label><input type="number" name="distance" [(ngModel)]="tourForm.distance" min="1" required /></div>
       <div><label>Estimated Time (h)</label><input type="number" name="estimatedTime" [(ngModel)]="tourForm.estimatedTime" min="1" required /></div>
+      <div><label>Latitude</label><input type="number" step="any" name="latitude" [(ngModel)]="tourForm.latitude" required /></div>
+      <div><label>Longitude</label><input type="number" step="any" name="longitude" [(ngModel)]="tourForm.longitude" required /></div>
       <div class="full-width"><label>Image URL</label><input type="text" name="image" [(ngModel)]="tourForm.image" required /></div>
       <div class="full-width"><label>Description</label><textarea name="description" [(ngModel)]="tourForm.description" required></textarea></div>
     </div>

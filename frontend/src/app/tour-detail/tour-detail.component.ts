@@ -30,7 +30,7 @@ export class TourDetailComponent implements AfterViewInit, OnDestroy, OnChanges 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tour'] && !changes['tour'].firstChange && this.map) {
       // Logic to reset map view or update markers when tour changes
-      this.map.setView([48.2082, 16.3738], 12);
+      this.map.setView([this.tour.longitude, this.tour.latitude], 12);
     }
     if (this.map) {
       setTimeout(() => {
@@ -42,7 +42,7 @@ export class TourDetailComponent implements AfterViewInit, OnDestroy, OnChanges 
   private initMap(): void {
     // 1. Initialize map
     this.map = L.map('map', {
-      center: [48.2082, 16.3738], // Default to Vienna
+      center: [this.tour.longitude, this.tour.latitude],
       zoom: 12
     });
 
@@ -52,7 +52,7 @@ export class TourDetailComponent implements AfterViewInit, OnDestroy, OnChanges 
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    // Small fix: Leaflet sometimes misses container size on init
+    // Leaflet sometimes misses container size on init
     setTimeout(() => {
       this.map.invalidateSize();
     }, 100);
