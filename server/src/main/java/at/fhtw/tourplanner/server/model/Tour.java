@@ -34,12 +34,15 @@ public class Tour {
     @Column(nullable = false)
     private String transportType;
 
+    /** Distance in kilometers, computed from OpenRouteService. */
     private Double distance;
 
+    /** Estimated travel time in hours, computed from OpenRouteService. */
     private Double estimatedTime;
 
-    @Column(length = 5000)
-    private String routeInformation;
+    /** Route geometry as a JSON array of [lat, lng] pairs (from ORS), used by Leaflet. */
+    @Column(columnDefinition = "TEXT")
+    private String routeGeometry;
 
     private String imagePath;
 
@@ -51,6 +54,7 @@ public class Tour {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourLog> logs = new ArrayList<>();
 }

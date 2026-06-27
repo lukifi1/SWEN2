@@ -25,6 +25,7 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tour> tours = new ArrayList<>();
 }
