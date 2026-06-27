@@ -1,0 +1,8 @@
+package at.fhtw.tourplanner.server.business.exceptions;
+
+public class InvalidCredentialsException extends BusinessException {
+
+    public InvalidCredentialsException() {
+        super("Invalid username or password.");
+    }
+}
