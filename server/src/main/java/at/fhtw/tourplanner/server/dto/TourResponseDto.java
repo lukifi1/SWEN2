@@ -9,7 +9,7 @@ public record TourResponseDto(
         String transportType,
         Double distance,
         Double estimatedTime,
-        String routeInformation,
+        String routeGeometry,
         String imagePath,
         Integer popularity,
         Double childFriendliness
