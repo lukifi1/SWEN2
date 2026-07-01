@@ -1,0 +1,44 @@
+<div class="auth-wrapper">
+  <div class="auth-card panel">
+    <h2>Create your account</h2>
+    <p class="muted">Register to start planning tours.</p>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="reg-username">Username</label>
+        <input id="reg-username" type="text" formControlName="username" autocomplete="username" />
+        @if (form.controls.username.touched && form.controls.username.invalid) {
+          <span class="field-error">Username must be 3-50 characters.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="reg-password">Password</label>
+        <input id="reg-password" type="password" formControlName="password"
+               autocomplete="new-password" />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="field-error">Password must be at least 6 characters.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="reg-confirm">Confirm password</label>
+        <input id="reg-confirm" type="password" formControlName="confirmPassword"
+               autocomplete="new-password" />
+        @if (form.controls.confirmPassword.touched && form.hasError('passwordMismatch')) {
+          <span class="field-error">Passwords do not match.</span>
+        }
+      </div>
+
+      <app-action-button label="Register" type="submit" variant="primary"
+                         [fullWidth]="true" [disabled]="loading()">
+      </app-action-button>
+    </form>
+
+    <p class="switch">Already have an account? <a routerLink="/login">Log in</a></p>
+  </div>
+</div>

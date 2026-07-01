@@ -1,0 +1,25 @@
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card h2 {
+  margin-bottom: 4px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.switch {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}

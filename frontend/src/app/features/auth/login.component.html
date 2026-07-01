@@ -1,0 +1,35 @@
+<div class="auth-wrapper">
+  <div class="auth-card panel">
+    <h2>Welcome back</h2>
+    <p class="muted">Log in to manage your tours.</p>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="login-username">Username</label>
+        <input id="login-username" type="text" formControlName="username" autocomplete="username" />
+        @if (form.controls.username.touched && form.controls.username.invalid) {
+          <span class="field-error">Username is required.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" formControlName="password"
+               autocomplete="current-password" />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="field-error">Password is required.</span>
+        }
+      </div>
+
+      <app-action-button label="Login" type="submit" variant="primary"
+                         [fullWidth]="true" [disabled]="loading()">
+      </app-action-button>
+    </form>
+
+    <p class="switch">No account yet? <a routerLink="/register">Register here</a></p>
+  </div>
+</div>
