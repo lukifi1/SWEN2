@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Strongly typed access to all externalized application configuration.
  * Every value is supplied through application.properties which in turn reads
- * from environment variables (.env) - nothing is hard-coded in the source.
+ * from environment variables (.env).
  */
 @Getter
 @Setter
