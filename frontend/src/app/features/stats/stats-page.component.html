@@ -1,0 +1,74 @@
+<div class="panel-header">
+  <h2>📊 Statistics Dashboard</h2>
+</div>
+
+@if (vm.loading()) {
+  <div class="empty-state">Loading statistics…</div>
+} @else if (vm.error()) {
+  <div class="alert alert-error">{{ vm.error() }}</div>
+} @else if (vm.stats()) {
+  @if (vm.stats(); as stats) {
+
+  <div class="cards-grid">
+    <app-stat-card icon="🧭" [value]="stats.totalTours" label="Tours"></app-stat-card>
+    <app-stat-card icon="📝" [value]="stats.totalLogs" label="Logs"></app-stat-card>
+    <app-stat-card icon="📏" [value]="(stats.totalTourDistance | number: '1.0-1') + ' km'"
+                   label="Planned distance"></app-stat-card>
+    <app-stat-card icon="🥾" [value]="(stats.totalLoggedDistance | number: '1.0-1') + ' km'"
+                   label="Logged distance"></app-stat-card>
+    <app-stat-card icon="⏱️" [value]="(stats.totalLoggedTime | number: '1.0-1') + ' h'"
+                   label="Logged time"></app-stat-card>
+    <app-stat-card icon="⭐" [value]="stats.averageRating | number: '1.0-1'"
+                   label="Average rating"></app-stat-card>
+  </div>
+
+  <div class="charts-grid">
+    <div class="panel chart-card">
+      <h3>Difficulty distribution</h3>
+      <app-bar-chart [data]="toBars(stats.difficultyDistribution)" color="#f59e0b"></app-bar-chart>
+    </div>
+
+    <div class="panel chart-card">
+      <h3>Rating distribution</h3>
+      <app-bar-chart [data]="toBars(stats.ratingDistribution)" color="#16a34a"></app-bar-chart>
+    </div>
+
+    <div class="panel chart-card">
+      <h3>Tours by transport type</h3>
+      <app-bar-chart [data]="toBars(stats.transportTypeBreakdown)" color="#2563eb"></app-bar-chart>
+    </div>
+
+    <div class="panel chart-card">
+      <h3>Logged distance over time</h3>
+      <app-bar-chart [data]="monthBars()" color="#7c3aed"></app-bar-chart>
+    </div>
+  </div>
+
+  <div class="panel ranking">
+    <h3>Most popular tours</h3>
+    @if (stats.popularityRanking.length === 0) {
+      <p class="muted">No tours yet.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr><th>#</th><th>Tour</th><th>Logs</th><th>Child-friendliness</th></tr>
+        </thead>
+        <tbody>
+          @for (tour of stats.popularityRanking; track tour.name; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ tour.name }}</td>
+              <td>{{ tour.popularity }}</td>
+              <td>
+                <span class="badge" [class]="childFriendlinessLabel(tour.childFriendliness).badge">
+                  {{ childFriendlinessLabel(tour.childFriendliness).text }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+  }
+}
