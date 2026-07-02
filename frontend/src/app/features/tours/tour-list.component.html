@@ -1,0 +1,37 @@
+<div class="panel">
+  <div class="panel-header">
+    <h2>Tours <span class="count">({{ tours.length }})</span></h2>
+  </div>
+
+  @if (loading) {
+    <div class="empty-state">Loading…</div>
+  } @else if (tours.length === 0) {
+    <div class="empty-state">No tours found.</div>
+  } @else {
+    <div class="tour-list">
+      @for (tour of tours; track tour.id) {
+        <button
+          class="tour-card"
+          [class.active]="selectedId === tour.id"
+          (click)="tourSelected.emit(tour)">
+          @if (imageUrl(tour); as url) {
+            <img [src]="url" [alt]="tour.name" class="tour-thumb" />
+          } @else {
+            <div class="tour-thumb placeholder">🧭</div>
+          }
+          <div class="tour-info">
+            <h3>{{ tour.name }}</h3>
+            <p class="route">{{ tour.fromLocation }} → {{ tour.toLocation }}</p>
+            <div class="meta">
+              <span>{{ tour.transportType }}</span>
+              <span>{{ formatDistance(tour.distance) }}</span>
+            </div>
+            <span class="badge" [class]="childFriendlinessLabel(tour.childFriendliness).badge">
+              {{ childFriendlinessLabel(tour.childFriendliness).text }}
+            </span>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

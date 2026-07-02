@@ -1,0 +1,57 @@
+<div class="tours-toolbar panel">
+  <div class="search-box">
+    <input
+      type="search"
+      placeholder="🔍 Search tours, logs, 'child friendly', 'popular' ..."
+      [value]="vm.searchTerm()"
+      (input)="onSearch($event)" />
+  </div>
+  <div class="toolbar-actions">
+    <app-action-button label="+ New Tour" variant="primary" (buttonClick)="vm.startCreate()">
+    </app-action-button>
+    <app-action-button label="⬆ Import" variant="secondary" (buttonClick)="fileInput.click()">
+    </app-action-button>
+    <app-action-button label="⬇ Export" variant="secondary" (buttonClick)="onExport()">
+    </app-action-button>
+    <input #fileInput type="file" accept=".gpx,application/gpx+xml" hidden (change)="onImport($event)" />
+  </div>
+</div>
+
+@if (vm.error()) {
+  <div class="alert alert-error">{{ vm.error() }}</div>
+}
+@if (importMessage()) {
+  <div class="alert alert-success">{{ importMessage() }}</div>
+}
+
+<div class="tours-layout">
+  <aside class="sidebar">
+    <app-tour-list
+      [tours]="vm.tours()"
+      [selectedId]="vm.selectedTour()?.id ?? null"
+      [loading]="vm.loading()"
+      (tourSelected)="vm.select($event)">
+    </app-tour-list>
+  </aside>
+
+  <section class="content">
+    @if (vm.mode() === 'create' || vm.mode() === 'edit') {
+      <app-tour-form
+        [tour]="vm.mode() === 'edit' ? vm.selectedTour() : null"
+        [saving]="vm.loading()"
+        (save)="vm.save($event)"
+        (cancel)="vm.cancelForm()">
+      </app-tour-form>
+    } @else {
+      @if (vm.selectedTour(); as tour) {
+        <app-tour-detail
+          [tour]="tour"
+          (editTour)="vm.startEdit()"
+          (deleteTour)="vm.delete()">
+        </app-tour-detail>
+      } @else {
+        <div class="empty-state panel">Select a tour from the list, or create a new one.</div>
+      }
+    }
+  </section>
+</div>
