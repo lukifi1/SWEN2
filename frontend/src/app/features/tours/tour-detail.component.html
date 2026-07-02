@@ -1,0 +1,51 @@
+<div class="panel">
+  <div class="panel-header">
+    <h2>{{ tour.name }}</h2>
+    <div class="button-row" style="margin: 0;">
+      <app-action-button label="Edit" variant="secondary" (buttonClick)="editTour.emit()">
+      </app-action-button>
+      <app-action-button label="Delete" variant="danger" (buttonClick)="deleteTour.emit()">
+      </app-action-button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-info">
+      @if (imageUrl(); as url) {
+        <img [src]="url" [alt]="tour.name" class="detail-image" />
+      }
+      <p class="description">{{ tour.description || 'No description.' }}</p>
+
+      <ul class="attr-list">
+        <li><span>Route</span><strong>{{ tour.fromLocation }} → {{ tour.toLocation }}</strong></li>
+        <li><span>Transport</span><strong>{{ tour.transportType }}</strong></li>
+        <li><span>Distance</span><strong>{{ formatDistance(tour.distance) }}</strong></li>
+        <li><span>Estimated time</span><strong>{{ formatTime(tour.estimatedTime) }}</strong></li>
+        <li>
+          <span>Popularity</span>
+          <strong>{{ popularityLabel(tour.popularity) }} ({{ tour.popularity }} logs)</strong>
+        </li>
+        <li>
+          <span>Child-friendliness</span>
+          <strong>
+            <span class="badge" [class]="childFriendlinessLabel(tour.childFriendliness).badge">
+              {{ childFriendlinessLabel(tour.childFriendliness).text }}
+            </span>
+            @if (tour.childFriendliness) {
+              {{ tour.childFriendliness }}/100
+            }
+          </strong>
+        </li>
+      </ul>
+    </div>
+
+    <div class="detail-map">
+      <div #mapContainer class="map"></div>
+      @if (!hasRoute) {
+        <p class="muted no-route">No route geometry available for this tour.</p>
+      }
+    </div>
+  </div>
+</div>
+
+<app-tour-logs [tourId]="tour.id"></app-tour-logs>
