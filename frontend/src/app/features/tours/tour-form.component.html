@@ -1,0 +1,85 @@
+<div class="panel">
+  <div class="panel-header">
+    <h2>{{ isEdit ? 'Edit Tour' : 'Create Tour' }}</h2>
+  </div>
+
+  <p class="muted hint">
+    Distance, estimated time and the route map are calculated automatically from
+    <strong>From</strong> and <strong>To</strong> via OpenRouteService when you save.
+  </p>
+
+  @if (uploadError()) {
+    <div class="alert alert-error">{{ uploadError() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <div>
+        <label for="name">Name</label>
+        <input id="name" type="text" formControlName="name" />
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <span class="field-error">Name is required (max 120 chars).</span>
+        }
+      </div>
+
+      <div>
+        <label for="transportType">Transport type</label>
+        <select id="transportType" formControlName="transportType">
+          @for (type of transportTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="from">From</label>
+        <input id="from" type="text" formControlName="fromLocation" placeholder="e.g. Vienna" />
+        @if (form.controls.fromLocation.touched && form.controls.fromLocation.invalid) {
+          <span class="field-error">Start location is required.</span>
+        }
+      </div>
+
+      <div>
+        <label for="to">To</label>
+        <input id="to" type="text" formControlName="toLocation" placeholder="e.g. Graz" />
+        @if (form.controls.toLocation.touched && form.controls.toLocation.invalid) {
+          <span class="field-error">Destination is required.</span>
+        }
+      </div>
+
+      <div class="full-width">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description"></textarea>
+      </div>
+
+      <div class="full-width image-upload">
+        <label>Tour image</label>
+        <div class="image-row">
+          @if (imageUrl(); as url) {
+            <img [src]="url" alt="Tour image preview" class="image-preview" />
+          } @else {
+            <div class="image-preview placeholder">No image</div>
+          }
+          <div>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+            @if (uploadingImage()) {
+              <span class="muted">Uploading…</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <app-action-button
+        [label]="saving ? 'Saving…' : (isEdit ? 'Save changes' : 'Create tour')"
+        type="submit"
+        variant="primary"
+        [disabled]="saving || uploadingImage()">
+      </app-action-button>
+      <app-action-button label="Cancel" type="button" variant="secondary"
+                         (buttonClick)="cancel.emit()">
+      </app-action-button>
+    </div>
+  </form>
+</div>
