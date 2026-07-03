@@ -1,108 +1,68 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #1f2937;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-  padding: 24px;
-}
-
-.panel {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.button-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.empty-state {
-  padding: 20px;
-  border: 1px dashed #cbd5e1;
-  border-radius: 12px;
-  text-align: center;
-  color: #64748b;
-}
-
-.container {
-  margin: 0 auto;
-}
-
 .header {
-  margin-bottom: 32px;
-  padding: 0 20px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-
-.header p {
-  margin-top: 8px;
-  color: #6b7280;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.04);
 }
 
 .header-main {
   display: flex;
-  justify-content: space-between; /* Pushes brand left, nav right */
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  color: var(--text);
+}
+
+.brand h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.brand p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 .auth-menu {
   display: flex;
-  gap: 12px; /* Spacing between Login and Register */
-  margin-top: 5px;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 1.8rem;
+.nav-link {
+  font-weight: 600;
+  color: var(--muted);
+  padding: 6px 4px;
+  border-bottom: 2px solid transparent;
 }
 
-.brand p {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
-  color: #6b7280;
+.nav-link:hover {
+  color: var(--text);
 }
 
-/* Ensure the container stays centered if you added the .container class earlier */
-.container {
-  margin: 0 auto;
-  padding: 0 20px;
+.nav-link.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
+.user-chip {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
 
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+.main-content {
+  padding-top: 24px;
+  padding-bottom: 48px;
 }

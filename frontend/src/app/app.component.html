@@ -1,62 +1,24 @@
 <div class="app-shell">
-  <!-- Wrap header content to align with the grid below -->
-  <header class="header container">
-    <div class="header-main">
-      <div class="brand">
-        <h1>TourPlanner</h1>
+  <header class="header">
+    <div class="container header-main">
+      <a class="brand" routerLink="/tours">
+        <h1>🧭 TourPlanner</h1>
         <p>Plan, manage and review your personal tours.</p>
-      </div>
+      </a>
 
-      <nav class="auth-menu">
-        <app-action-button
-          label="Login"
-          variant="secondary"
-          (buttonClick)="onLogin()">
-        </app-action-button>
-
-        <app-action-button
-          label="Register"
-          variant="primary"
-          (buttonClick)="onRegister()">
-        </app-action-button>
-      </nav>
+      @if (auth.isAuthenticated()) {
+        <nav class="auth-menu">
+          <a routerLink="/tours" routerLinkActive="active" class="nav-link">Tours</a>
+          <a routerLink="/stats" routerLinkActive="active" class="nav-link">Statistics</a>
+          <span class="user-chip">👤 {{ auth.username() }}</span>
+          <app-action-button label="Logout" variant="secondary" (buttonClick)="logout()">
+          </app-action-button>
+        </nav>
+      }
     </div>
   </header>
 
-  <div class="layout container">
-    <section class="panel sidebar">
-      <app-tour-list
-        [tours]="tours"
-        [selectedTourId]="selectedTour?.id"
-        (tourSelected)="selectTour($event)"
-        (createTourClicked)="openCreateTourForm()">
-      </app-tour-list>
-    </section>
-
-    <section class="panel content">
-      @if (showTourForm()) {
-        <app-tour-form
-          [tour]="selectedTour"
-          [editMode]="editMode()"
-          (save)="saveTour($event)"
-          (cancel)="cancelTourForm()">
-        </app-tour-form>
-      }
-
-      @if (!showTourForm() && selectedTour) {
-        <app-tour-detail
-          [tour]="selectedTour"
-          (editTour)="openEditTourForm()"
-          (deleteTour)="deleteTour()"
-          (tourUpdated)="updateTourState($event)">
-        </app-tour-detail>
-      }
-
-      @if (!showTourForm() && !selectedTour) {
-        <div class="empty-state">
-          Please create or select a tour.
-        </div>
-      }
-    </section>
-  </div>
+  <main class="container main-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>
