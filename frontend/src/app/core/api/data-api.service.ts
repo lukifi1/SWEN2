@@ -13,6 +13,10 @@ export class DataApiService {
     return this.http.get(`${API_BASE}/tours/export`, { responseType: 'blob' });
   }
 
+  exportTour(tourId: number): Observable<Blob> {
+    return this.http.get(`${API_BASE}/tours/${tourId}/export`, { responseType: 'blob' });
+  }
+
   importTours(file: File): Observable<{ imported: number }> {
     const form = new FormData();
     form.append('file', file);

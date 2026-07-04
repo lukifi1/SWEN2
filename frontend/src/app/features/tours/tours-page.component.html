@@ -11,7 +11,11 @@
     </app-action-button>
     <app-action-button label="⬆ Import" variant="secondary" (buttonClick)="fileInput.click()">
     </app-action-button>
-    <app-action-button label="⬇ Export" variant="secondary" (buttonClick)="onExport()">
+    <app-action-button
+      label="⬇ Export"
+      variant="secondary"
+      [disabled]="!vm.selectedTour()"
+      (buttonClick)="onExport()">
     </app-action-button>
     <input #fileInput type="file" accept=".gpx,application/gpx+xml" hidden (change)="onImport($event)" />
   </div>

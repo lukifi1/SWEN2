@@ -24,6 +24,17 @@ public class ImportExportController {
     public ResponseEntity<byte[]> export(Authentication auth) {
         byte[] data = importExportService.export(auth.getName());
         String filename = "tours." + importExportService.exportFileExtension();
+        return exportResponse(data, filename);
+    }
+
+    @GetMapping("/{id}/export")
+    public ResponseEntity<byte[]> exportTour(@PathVariable Long id, Authentication auth) {
+        byte[] data = importExportService.exportTour(id, auth.getName());
+        String filename = "tour-" + id + "." + importExportService.exportFileExtension();
+        return exportResponse(data, filename);
+    }
+
+    private ResponseEntity<byte[]> exportResponse(byte[] data, String filename) {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .contentType(MediaType.parseMediaType(importExportService.exportContentType()))

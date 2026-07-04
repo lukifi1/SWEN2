@@ -34,8 +34,14 @@ export class ToursPageComponent implements OnInit {
   }
 
   onExport(): void {
-    this.dataApi.exportTours().subscribe({
-      next: (blob) => this.downloadBlob(blob, 'tours.gpx'),
+    const selected = this.vm.selectedTour();
+    if (!selected) {
+      this.vm.error.set('Select a tour before exporting.');
+      return;
+    }
+
+    this.dataApi.exportTour(selected.id).subscribe({
+      next: (blob) => this.downloadBlob(blob, this.exportFilename(selected.name)),
       error: (err) => this.vm.error.set(extractMessage(err, 'Export failed.')),
     });
   }
@@ -64,5 +70,12 @@ export class ToursPageComponent implements OnInit {
     anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
+  }
+
+  private exportFilename(name: string): string {
+    const safeName = name.trim().toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return `${safeName || 'tour'}.gpx`;
   }
 }

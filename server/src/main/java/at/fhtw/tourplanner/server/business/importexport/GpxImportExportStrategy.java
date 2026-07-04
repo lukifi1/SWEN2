@@ -14,9 +14,13 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * GPX implementation of {@link ImportExportStrategy}.
@@ -159,6 +163,21 @@ public class GpxImportExportStrategy implements ImportExportStrategy {
         Double estimatedTime = parseDouble(firstTpText(trk, "estimatedTime"));
         String imagePath     = firstTpText(trk, "imagePath");
 
+        List<TrackPoint> points = trackPoints(trk);
+
+        if (from == null && !points.isEmpty()) {
+            from = formatLocation(points.getFirst());
+        }
+        if (to == null && !points.isEmpty()) {
+            to = formatLocation(points.getLast());
+        }
+        if (distance == null) {
+            distance = calculateDistanceKm(points);
+        }
+        if (estimatedTime == null) {
+            estimatedTime = calculateDurationHours(points);
+        }
+
         // Logs
         List<TourExportFile.TourLogExport> logs = new ArrayList<>();
         NodeList logNodes = trk.getElementsByTagNameNS(TP_NS, "log");
@@ -170,22 +189,24 @@ public class GpxImportExportStrategy implements ImportExportStrategy {
         }
 
         // Route geometry from trkpt
-        NodeList trkpts = trk.getElementsByTagNameNS(GPX_NS, "trkpt");
-        if (trkpts.getLength() == 0) trkpts = trk.getElementsByTagName("trkpt");
         String geometry = null;
-        if (trkpts.getLength() > 0) {
+        if (!points.isEmpty()) {
             StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < trkpts.getLength(); i++) {
-                Element pt = (Element) trkpts.item(i);
+            for (int i = 0; i < points.size(); i++) {
+                TrackPoint pt = points.get(i);
                 if (i > 0) sb.append(',');
-                sb.append('[').append(pt.getAttribute("lat")).append(',')
-                              .append(pt.getAttribute("lon")).append(']');
+                sb.append('[').append(pt.lat()).append(',')
+                              .append(pt.lon()).append(']');
             }
             geometry = sb.append(']').toString();
         }
 
         return new TourExportFile.TourExport(
-                name, description, from, to, transportType,
+                defaultIfBlank(name, "Imported GPX Tour"),
+                description,
+                defaultIfBlank(from, "Unknown start"),
+                defaultIfBlank(to, "Unknown destination"),
+                defaultIfBlank(transportType, "Hiking"),
                 distance, estimatedTime, geometry, imagePath, logs);
     }
 
@@ -236,6 +257,77 @@ public class GpxImportExportStrategy implements ImportExportStrategy {
         return nl.item(0).getTextContent().trim();
     }
 
+    private List<TrackPoint> trackPoints(Element trk) {
+        NodeList trkpts = trk.getElementsByTagNameNS(GPX_NS, "trkpt");
+        if (trkpts.getLength() == 0) trkpts = trk.getElementsByTagName("trkpt");
+
+        List<TrackPoint> points = new ArrayList<>();
+        for (int i = 0; i < trkpts.getLength(); i++) {
+            Element pt = (Element) trkpts.item(i);
+            Double lat = parseDouble(pt.getAttribute("lat"));
+            Double lon = parseDouble(pt.getAttribute("lon"));
+            if (lat == null || lon == null) {
+                continue;
+            }
+            points.add(new TrackPoint(lat, lon, parseInstant(firstText(pt, "time"))));
+        }
+        return points;
+    }
+
+    private String formatLocation(TrackPoint point) {
+        return String.format(Locale.ROOT, "%.6f, %.6f", point.lat(), point.lon());
+    }
+
+    private Double calculateDistanceKm(List<TrackPoint> points) {
+        if (points.size() < 2) return 0.0;
+        double meters = 0.0;
+        for (int i = 1; i < points.size(); i++) {
+            meters += haversineMeters(points.get(i - 1), points.get(i));
+        }
+        return Math.round((meters / 1000.0) * 100.0) / 100.0;
+    }
+
+    private double haversineMeters(TrackPoint a, TrackPoint b) {
+        double earthRadiusMeters = 6_371_000.0;
+        double lat1 = Math.toRadians(a.lat());
+        double lat2 = Math.toRadians(b.lat());
+        double deltaLat = Math.toRadians(b.lat() - a.lat());
+        double deltaLon = Math.toRadians(b.lon() - a.lon());
+
+        double h = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        return earthRadiusMeters * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+
+    private Double calculateDurationHours(List<TrackPoint> points) {
+        Instant start = null;
+        Instant end = null;
+        for (TrackPoint point : points) {
+            if (point.time() == null) {
+                continue;
+            }
+            if (start == null) {
+                start = point.time();
+            }
+            end = point.time();
+        }
+        if (start == null || end == null || end.isBefore(start)) {
+            return 0.0;
+        }
+        double hours = Duration.between(start, end).toSeconds() / 3600.0;
+        return Math.round(hours * 100.0) / 100.0;
+    }
+
+    private Instant parseInstant(String value) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            return Instant.parse(value);
+        } catch (DateTimeParseException ignored) {
+            return null;
+        }
+    }
+
     private List<double[]> parseGeometry(String json) {
         List<double[]> result = new ArrayList<>();
         if (json == null || json.isBlank()) return result;
@@ -265,6 +357,12 @@ public class GpxImportExportStrategy implements ImportExportStrategy {
     }
 
     private String nvl(String s) { return s != null ? s : ""; }
+
+    private String defaultIfBlank(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private record TrackPoint(double lat, double lon, Instant time) {}
 
     private DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

@@ -2,6 +2,7 @@ package at.fhtw.tourplanner.server.business;
 
 import at.fhtw.tourplanner.server.business.importexport.ImportExportStrategy;
 import at.fhtw.tourplanner.server.business.importexport.TourExportFile;
+import at.fhtw.tourplanner.server.business.exceptions.TourNotFoundException;
 import at.fhtw.tourplanner.server.dal.TourRepository;
 import at.fhtw.tourplanner.server.model.Tour;
 import at.fhtw.tourplanner.server.model.TourLog;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Imports and exports the authenticated user's tours (including their logs).
  * The serialization format is provided by an {@link ImportExportStrategy}
- * (Strategy pattern), currently JSON.
+ * (Strategy pattern), currently GPX.
  */
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,14 @@ public class ImportExportService {
                 .toList();
         log.info("Exporting {} tours for user '{}'", exportTours.size(), username);
         return strategy.export(new TourExportFile(EXPORT_VERSION, exportTours));
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportTour(Long tourId, String username) {
+        Tour tour = tourRepository.findByIdAndUser_Username(tourId, username)
+                .orElseThrow(() -> new TourNotFoundException(tourId));
+        log.info("Exporting tour {} ('{}') for user '{}'", tour.getId(), tour.getName(), username);
+        return strategy.export(new TourExportFile(EXPORT_VERSION, List.of(toExport(tour))));
     }
 
     public String exportFileExtension() {
