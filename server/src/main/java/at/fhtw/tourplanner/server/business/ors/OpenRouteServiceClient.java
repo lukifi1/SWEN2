@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Thin client around the OpenRouteService REST API. Geocodes the textual
@@ -99,6 +100,45 @@ public class OpenRouteServiceClient {
                 .map(this::toSuggestion)
                 .filter(suggestion -> StringUtils.hasText(suggestion.label()))
                 .toList();
+    }
+
+    public Optional<String> reverseGeocode(double lat, double lon) {
+        if (!StringUtils.hasText(apiKey)) {
+            throw new RouteCalculationException(
+                    "OpenRouteService API key is not configured. Set OPENROUTE_API_KEY in your environment.");
+        }
+
+        GeocodeResponse response;
+        try {
+            response = restClient.get()
+                    .uri(uri -> uri.path("/geocode/reverse")
+                            .queryParam("api_key", apiKey)
+                            .queryParam("point.lon", lon)
+                            .queryParam("point.lat", lat)
+                            .queryParam("size", 1)
+                            .build())
+                    .retrieve()
+                    .body(GeocodeResponse.class);
+        } catch (Exception ex) {
+            throw new RouteCalculationException("Failed to reverse-geocode coordinates.", ex);
+        }
+
+        if (response == null || response.features() == null || response.features().isEmpty()) {
+            return Optional.empty();
+        }
+
+        LocationSuggestionDto suggestion = toSuggestion(response.features().getFirst());
+        return StringUtils.hasText(suggestion.label())
+                ? Optional.of(shortLocationLabel(suggestion.label()))
+                : Optional.empty();
+    }
+
+    private String shortLocationLabel(String label) {
+        String[] parts = label.split(",");
+        if (parts.length < 2) {
+            return label.trim();
+        }
+        return parts[0].trim() + ", " + parts[1].trim();
     }
 
     /** Returns coordinates as [lon, lat] for the given location, as ORS expects. */

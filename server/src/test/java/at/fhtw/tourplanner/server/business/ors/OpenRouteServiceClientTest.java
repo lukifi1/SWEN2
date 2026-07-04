@@ -68,6 +68,27 @@ class OpenRouteServiceClientTest {
     }
 
     @Test
+    void reverseGeocodeReturnsShortLocationLabel() {
+        RestClient.Builder builder = RestClient.builder();
+        MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+        RestClient restClient = builder.build();
+        OpenRouteServiceClient ors = new OpenRouteServiceClient(restClient, propertiesWithKey("real-key"));
+
+        server.expect(requestTo(containsString("/geocode/reverse")))
+                .andExpect(requestTo(containsString("point.lon=11.586574")))
+                .andExpect(requestTo(containsString("point.lat=46.422015")))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(
+                        "{\"features\":[{\"geometry\":{\"coordinates\":[11.586574,46.422015]},"
+                                + "\"properties\":{\"label\":\"Tschein, Nova Levante, BZ, Italy\"}}]}",
+                        MediaType.APPLICATION_JSON));
+
+        assertThat(ors.reverseGeocode(46.422015, 11.586574))
+                .contains("Tschein, Nova Levante");
+        server.verify();
+    }
+
+    @Test
     void blankApiKeyFailsFastWithoutHttpCall() {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();

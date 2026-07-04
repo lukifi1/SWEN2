@@ -2,6 +2,7 @@ package at.fhtw.tourplanner.server.business;
 
 import at.fhtw.tourplanner.server.business.importexport.ImportExportStrategy;
 import at.fhtw.tourplanner.server.business.importexport.TourExportFile;
+import at.fhtw.tourplanner.server.business.ors.OpenRouteServiceClient;
 import at.fhtw.tourplanner.server.dal.TourRepository;
 import at.fhtw.tourplanner.server.model.Tour;
 import at.fhtw.tourplanner.server.model.TourLog;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +43,8 @@ class ImportExportServiceTest {
     private ComputedAttributesService computedAttributesService;
     @Mock
     private ImportExportStrategy strategy;
+    @Mock
+    private OpenRouteServiceClient openRouteServiceClient;
 
     @InjectMocks
     private ImportExportService importExportService;
@@ -91,6 +95,32 @@ class ImportExportServiceTest {
         assertThat(imported).isEqualTo(2);
         verify(tourRepository, times(2)).save(any(Tour.class));
         verify(computedAttributesService, times(2)).recompute(any(Tour.class));
+    }
+
+    @Test
+    void importResolvesCoordinateLocationsViaOpenRouteService() {
+        User user = User.builder().username("alice").build();
+        when(currentUserService.require("alice")).thenReturn(user);
+        when(openRouteServiceClient.reverseGeocode(46.422015, 11.586574))
+                .thenReturn(Optional.of("Talstation des Tschein-Sessellifts"));
+        when(openRouteServiceClient.reverseGeocode(46.391594, 11.577436))
+                .thenReturn(Optional.of("Labyrinthsteig"));
+
+        TourExportFile.TourExport importedTour = new TourExportFile.TourExport(
+                "Komoot", "d",
+                "46.422015, 11.586574",
+                "46.391594, 11.577436",
+                "hike", 1.0, 1.0, null, null, List.of());
+        when(strategy.parse(any())).thenReturn(new TourExportFile("1.0", List.of(importedTour)));
+        when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        importExportService.importData("BYTES".getBytes(), "alice");
+
+        ArgumentCaptor<Tour> captor = ArgumentCaptor.forClass(Tour.class);
+        verify(tourRepository).save(captor.capture());
+        Tour saved = captor.getValue();
+        assertThat(saved.getFromLocation()).isEqualTo("Talstation des Tschein-Sessellifts");
+        assertThat(saved.getToLocation()).isEqualTo("Labyrinthsteig");
     }
 
     @Test

@@ -1,8 +1,10 @@
 package at.fhtw.tourplanner.server.business;
 
+import at.fhtw.tourplanner.server.business.exceptions.RouteCalculationException;
+import at.fhtw.tourplanner.server.business.exceptions.TourNotFoundException;
 import at.fhtw.tourplanner.server.business.importexport.ImportExportStrategy;
 import at.fhtw.tourplanner.server.business.importexport.TourExportFile;
-import at.fhtw.tourplanner.server.business.exceptions.TourNotFoundException;
+import at.fhtw.tourplanner.server.business.ors.OpenRouteServiceClient;
 import at.fhtw.tourplanner.server.dal.TourRepository;
 import at.fhtw.tourplanner.server.model.Tour;
 import at.fhtw.tourplanner.server.model.TourLog;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Imports and exports the authenticated user's tours (including their logs).
@@ -31,6 +34,7 @@ public class ImportExportService {
     private final CurrentUserService currentUserService;
     private final ComputedAttributesService computedAttributesService;
     private final ImportExportStrategy strategy;
+    private final OpenRouteServiceClient openRouteServiceClient;
 
     @Transactional(readOnly = true)
     public byte[] export(String username) {
@@ -93,8 +97,8 @@ public class ImportExportService {
         Tour tour = Tour.builder()
                 .name(exportTour.name())
                 .description(exportTour.description())
-                .fromLocation(exportTour.fromLocation())
-                .toLocation(exportTour.toLocation())
+                .fromLocation(resolveImportedLocation(exportTour.fromLocation()))
+                .toLocation(resolveImportedLocation(exportTour.toLocation()))
                 .transportType(exportTour.transportType())
                 .distance(exportTour.distance())
                 .estimatedTime(exportTour.estimatedTime())
@@ -122,4 +126,39 @@ public class ImportExportService {
         tour.setLogs(logs);
         return tour;
     }
+
+    private String resolveImportedLocation(String location) {
+        Optional<CoordinatePair> coordinatePair = parseCoordinatePair(location);
+        if (coordinatePair.isEmpty()) {
+            return location;
+        }
+
+        CoordinatePair coordinates = coordinatePair.get();
+        try {
+            return openRouteServiceClient.reverseGeocode(coordinates.lat(), coordinates.lon())
+                    .orElse(location);
+        } catch (RouteCalculationException ex) {
+            log.warn("Could not resolve imported GPX coordinates '{}': {}", location, ex.getMessage());
+            return location;
+        }
+    }
+
+    private Optional<CoordinatePair> parseCoordinatePair(String location) {
+        if (location == null || location.isBlank()) {
+            return Optional.empty();
+        }
+        String[] parts = location.split(",");
+        if (parts.length != 2) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(new CoordinatePair(
+                    Double.parseDouble(parts[0].trim()),
+                    Double.parseDouble(parts[1].trim())));
+        } catch (NumberFormatException ex) {
+            return Optional.empty();
+        }
+    }
+
+    private record CoordinatePair(double lat, double lon) {}
 }
