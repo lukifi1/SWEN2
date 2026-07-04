@@ -34,7 +34,7 @@ export class TourFormComponent implements OnChanges {
   private dataApi = inject(DataApiService);
   private destroyRef = inject(DestroyRef);
 
-  readonly transportTypes = ['Hiking', 'Running', 'Bike', 'Car', 'Vacation'];
+  readonly transportTypes = ['Hiking', 'Running', 'Bike', 'Car'];
   readonly imagePath = signal<string | null>(null);
   readonly uploadingImage = signal(false);
   readonly uploadError = signal<string | null>(null);
