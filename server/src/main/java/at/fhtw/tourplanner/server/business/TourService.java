@@ -56,8 +56,8 @@ public class TourService {
         Tour tour = Tour.builder()
                 .name(dto.name())
                 .description(dto.description())
-                .fromLocation(dto.fromLocation())
-                .toLocation(dto.toLocation())
+                .fromLocation(openRouteServiceClient.shortenLocationLabel(dto.fromLocation()))
+                .toLocation(openRouteServiceClient.shortenLocationLabel(dto.toLocation()))
                 .transportType(dto.transportType())
                 .distance(route.distanceKm())
                 .estimatedTime(route.timeHours())
@@ -84,8 +84,8 @@ public class TourService {
 
         tour.setName(dto.name());
         tour.setDescription(dto.description());
-        tour.setFromLocation(dto.fromLocation());
-        tour.setToLocation(dto.toLocation());
+        tour.setFromLocation(openRouteServiceClient.shortenLocationLabel(dto.fromLocation()));
+        tour.setToLocation(openRouteServiceClient.shortenLocationLabel(dto.toLocation()));
         tour.setTransportType(dto.transportType());
         tour.setImagePath(dto.imagePath());
 

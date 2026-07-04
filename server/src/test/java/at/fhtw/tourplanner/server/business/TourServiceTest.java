@@ -86,6 +86,8 @@ class TourServiceTest {
         when(currentUserService.require("alice")).thenReturn(user);
         when(openRouteServiceClient.calculateRoute("Vienna", "Graz", "Car"))
                 .thenReturn(new RouteResult(200.5, 2.25, "[[48.2,16.3],[47.0,15.4]]"));
+        when(openRouteServiceClient.shortenLocationLabel(anyString()))
+                .thenAnswer(inv -> inv.getArgument(0));
         when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
 
         TourCreateDto dto = new TourCreateDto("Trip", "desc", "Vienna", "Graz", "Car", "img.png");
@@ -97,6 +99,8 @@ class TourServiceTest {
         assertThat(persisted.getDistance()).isEqualTo(200.5);
         assertThat(persisted.getEstimatedTime()).isEqualTo(2.25);
         assertThat(persisted.getRouteGeometry()).isEqualTo("[[48.2,16.3],[47.0,15.4]]");
+        assertThat(persisted.getFromLocation()).isEqualTo("Vienna");
+        assertThat(persisted.getToLocation()).isEqualTo("Graz");
         assertThat(persisted.getPopularity()).isZero();
         assertThat(persisted.getChildFriendliness()).isEqualTo(0.0);
         assertThat(persisted.getUser()).isSameAs(user);
@@ -109,6 +113,8 @@ class TourServiceTest {
                 .thenReturn(Optional.of(existingTour()));
         when(openRouteServiceClient.calculateRoute("Vienna", "Salzburg", "Car"))
                 .thenReturn(new RouteResult(300.0, 3.0, "[[1.0,1.0]]"));
+        when(openRouteServiceClient.shortenLocationLabel(anyString()))
+                .thenAnswer(inv -> inv.getArgument(0));
         when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // toLocation changed Graz -> Salzburg
@@ -124,6 +130,8 @@ class TourServiceTest {
     void updateTourDoesNotCallOrsWhenOnlyNameOrDescriptionChange() {
         when(tourRepository.findByIdAndUser_Username(1L, "alice"))
                 .thenReturn(Optional.of(existingTour()));
+        when(openRouteServiceClient.shortenLocationLabel(anyString()))
+                .thenAnswer(inv -> inv.getArgument(0));
         when(tourRepository.save(any(Tour.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // from/to/transport unchanged; only name + description differ

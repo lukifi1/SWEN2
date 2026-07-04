@@ -129,11 +129,11 @@ public class OpenRouteServiceClient {
 
         LocationSuggestionDto suggestion = toSuggestion(response.features().getFirst());
         return StringUtils.hasText(suggestion.label())
-                ? Optional.of(shortLocationLabel(suggestion.label()))
+                ? Optional.of(shortenLocationLabel(suggestion.label()))
                 : Optional.empty();
     }
 
-    private String shortLocationLabel(String label) {
+    public String shortenLocationLabel(String label) {
         String[] parts = label.split(",");
         if (parts.length < 2) {
             return label.trim();

@@ -89,6 +89,14 @@ class OpenRouteServiceClientTest {
     }
 
     @Test
+    void shortenLocationLabelKeepsOnlyFirstTwoParts() {
+        OpenRouteServiceClient ors = new OpenRouteServiceClient(RestClient.create(), propertiesWithKey("real-key"));
+
+        assertThat(ors.shortenLocationLabel("Tschein, Nova Levante, BZ, Italy"))
+                .isEqualTo("Tschein, Nova Levante");
+    }
+
+    @Test
     void blankApiKeyFailsFastWithoutHttpCall() {
         RestClient.Builder builder = RestClient.builder();
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
