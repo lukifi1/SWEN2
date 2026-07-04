@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE } from './api.config';
+import { LocationSuggestion } from '../models/tour.model';
 
 /** Import/export of tour data and tour-image upload. */
 @Injectable({ providedIn: 'root' })
@@ -22,6 +23,12 @@ export class DataApiService {
     const form = new FormData();
     form.append('file', file);
     return this.http.post<{ filename: string }>(`${API_BASE}/images`, form);
+  }
+
+  locationSuggestions(query: string): Observable<LocationSuggestion[]> {
+    return this.http.get<LocationSuggestion[]>(`${API_BASE}/locations/suggest`, {
+      params: { q: query },
+    });
   }
 
   imageUrl(filename: string): string {

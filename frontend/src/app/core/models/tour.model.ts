@@ -43,3 +43,9 @@ export interface TourLogCreate {
   totalTime: number;
   rating: number;
 }
+
+export interface LocationSuggestion {
+  label: string;
+  longitude: number | null;
+  latitude: number | null;
+}

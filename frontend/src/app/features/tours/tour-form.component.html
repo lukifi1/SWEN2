@@ -12,6 +12,10 @@
     <div class="alert alert-error">{{ uploadError() }}</div>
   }
 
+  @if (locationLookupError()) {
+    <div class="alert alert-error">{{ locationLookupError() }}</div>
+  }
+
   <form [formGroup]="form" (ngSubmit)="submit()">
     <div class="form-grid">
       <div>
@@ -33,7 +37,27 @@
 
       <div>
         <label for="from">From</label>
-        <input id="from" type="text" formControlName="fromLocation" placeholder="e.g. Vienna" />
+        <div class="autocomplete">
+          <input
+            id="from"
+            type="text"
+            formControlName="fromLocation"
+            placeholder="e.g. Vienna"
+            autocomplete="off"
+            (blur)="clearSuggestions('fromLocation')" />
+          @if (fromSuggestions().length > 0) {
+            <div class="suggestions" role="listbox">
+              @for (suggestion of fromSuggestions(); track suggestion.label) {
+                <button
+                  type="button"
+                  class="suggestion"
+                  (mousedown)="applySuggestion('fromLocation', suggestion)">
+                  {{ suggestion.label }}
+                </button>
+              }
+            </div>
+          }
+        </div>
         @if (form.controls.fromLocation.touched && form.controls.fromLocation.invalid) {
           <span class="field-error">Start location is required.</span>
         }
@@ -41,7 +65,27 @@
 
       <div>
         <label for="to">To</label>
-        <input id="to" type="text" formControlName="toLocation" placeholder="e.g. Graz" />
+        <div class="autocomplete">
+          <input
+            id="to"
+            type="text"
+            formControlName="toLocation"
+            placeholder="e.g. Graz"
+            autocomplete="off"
+            (blur)="clearSuggestions('toLocation')" />
+          @if (toSuggestions().length > 0) {
+            <div class="suggestions" role="listbox">
+              @for (suggestion of toSuggestions(); track suggestion.label) {
+                <button
+                  type="button"
+                  class="suggestion"
+                  (mousedown)="applySuggestion('toLocation', suggestion)">
+                  {{ suggestion.label }}
+                </button>
+              }
+            </div>
+          }
+        </div>
         @if (form.controls.toLocation.touched && form.controls.toLocation.invalid) {
           <span class="field-error">Destination is required.</span>
         }

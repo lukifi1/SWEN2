@@ -2,6 +2,7 @@ package at.fhtw.tourplanner.server.business.ors;
 
 import at.fhtw.tourplanner.server.business.exceptions.RouteCalculationException;
 import at.fhtw.tourplanner.server.config.TourPlannerProperties;
+import at.fhtw.tourplanner.server.dto.LocationSuggestionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -67,6 +68,39 @@ public class OpenRouteServiceClient {
         return new RouteResult(distanceKm, timeHours, geometryJson);
     }
 
+    public List<LocationSuggestionDto> suggestLocations(String query) {
+        if (!StringUtils.hasText(query) || query.trim().length() < 3) {
+            return List.of();
+        }
+        if (!StringUtils.hasText(apiKey)) {
+            throw new RouteCalculationException(
+                    "OpenRouteService API key is not configured. Set OPENROUTE_API_KEY in your environment.");
+        }
+
+        GeocodeResponse response;
+        try {
+            response = restClient.get()
+                    .uri(uri -> uri.path("/geocode/autocomplete")
+                            .queryParam("api_key", apiKey)
+                            .queryParam("text", query.trim())
+                            .queryParam("size", 5)
+                            .build())
+                    .retrieve()
+                    .body(GeocodeResponse.class);
+        } catch (Exception ex) {
+            throw new RouteCalculationException("Failed to retrieve location suggestions.", ex);
+        }
+
+        if (response == null || response.features() == null || response.features().isEmpty()) {
+            return List.of();
+        }
+
+        return response.features().stream()
+                .map(this::toSuggestion)
+                .filter(suggestion -> StringUtils.hasText(suggestion.label()))
+                .toList();
+    }
+
     /** Returns coordinates as [lon, lat] for the given location, as ORS expects. */
     private double[] geocode(String location) {
         GeocodeResponse response;
@@ -124,11 +158,25 @@ public class OpenRouteServiceClient {
         }
     }
 
+    private LocationSuggestionDto toSuggestion(GeocodeResponse.Feature feature) {
+        List<Double> coords = feature.geometry() == null ? List.of() : feature.geometry().coordinates();
+        Double lon = coords.size() > 0 ? coords.get(0) : null;
+        Double lat = coords.size() > 1 ? coords.get(1) : null;
+        String label = feature.properties() == null ? null : feature.properties().label();
+        if (!StringUtils.hasText(label) && feature.properties() != null) {
+            label = feature.properties().name();
+        }
+        return new LocationSuggestionDto(label, lon, lat);
+    }
+
     record GeocodeResponse(List<Feature> features) {
-        record Feature(Geometry geometry) {
+        record Feature(Geometry geometry, Properties properties) {
         }
 
         record Geometry(List<Double> coordinates) {
+        }
+
+        record Properties(String label, String name) {
         }
     }
 }
