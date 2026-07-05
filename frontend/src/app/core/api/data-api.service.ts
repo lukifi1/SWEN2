@@ -9,6 +9,7 @@ import { LocationSuggestion } from '../models/tour.model';
 export class DataApiService {
   private http = inject(HttpClient);
 
+  // not used, old code, gonna leave it for potential later usage
   exportTours(): Observable<Blob> {
     return this.http.get(`${API_BASE}/tours/export`, { responseType: 'blob' });
   }

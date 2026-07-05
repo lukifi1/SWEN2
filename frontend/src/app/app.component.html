@@ -2,7 +2,7 @@
   <header class="header">
     <div class="container header-main">
       <a class="brand" routerLink="/tours">
-        <h1>🧭 TourPlanner</h1>
+        <h1>TourPlanner</h1>
         <p>Plan, manage and review your personal tours.</p>
       </a>
 
@@ -10,7 +10,7 @@
         <nav class="auth-menu">
           <a routerLink="/tours" routerLinkActive="active" class="nav-link">Tours</a>
           <a routerLink="/stats" routerLinkActive="active" class="nav-link">Statistics</a>
-          <span class="user-chip">👤 {{ auth.username() }}</span>
+          <span class="user-chip">{{ auth.username() }}</span>
           <app-action-button label="Logout" variant="secondary" (buttonClick)="logout()">
           </app-action-button>
         </nav>
