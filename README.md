@@ -122,10 +122,86 @@ CORS_ALLOWED_ORIGINS=http://localhost:4200
 ### Prerequisites
 Java 21, Maven (wrapper included), Node 20+, PostgreSQL 14+.
 
+On Windows, install:
+- Java 21 JDK
+- Node.js LTS
+- PostgreSQL for Windows, including pgAdmin or the `psql` command-line tool
+
+Docker is not required. The application expects a running PostgreSQL server and connects to
+it via the `DB_URL` configured in `server/.env`.
+
+#### Installing PostgreSQL on Windows
+1. Download the official Windows installer from
+   https://www.postgresql.org/download/windows/
+2. Run the installer and keep the default components selected:
+   - PostgreSQL Server
+   - pgAdmin 4
+   - Command Line Tools
+3. Keep the default port:
+   ```text
+   5432
+   ```
+4. Set and remember the password for the default PostgreSQL user:
+   ```text
+   postgres
+   ```
+5. Finish the installation.
+6. Open **Windows Services** and check that the PostgreSQL service is running. It is usually
+   named like:
+   ```text
+   postgresql-x64-16
+   ```
+   If it is not running, right-click it and choose **Start**.
+7. Open **pgAdmin 4**, connect to the local server and enter the password chosen during
+   installation.
+
 ### 1. Database
+
+The PostgreSQL server must be running before the backend starts. Spring Boot/Hibernate can
+create the application tables, but it does not create or start the PostgreSQL server itself.
+
+#### Option A: Windows / pgAdmin
+1. Open **pgAdmin**.
+2. Connect to the local PostgreSQL server with the password chosen during installation.
+3. Right-click **Databases** → **Create** → **Database...**.
+4. Set the database name to:
+   ```text
+   tourplanner
+   ```
+5. Use the default `postgres` user, or create a dedicated user:
+   - Login/Group Roles → Create → Login/Group Role...
+   - Name: `touruser`
+   - Password: `tourpassword`
+   - Enable "Can login?"
+6. If you created `touruser`, open pgAdmin's Query Tool on the `tourplanner` database and run:
+   ```sql
+   GRANT ALL PRIVILEGES ON DATABASE tourplanner TO touruser;
+   GRANT ALL ON SCHEMA public TO touruser;
+   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO touruser;
+   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO touruser;
+   ```
+
+Then use these values in `server/.env`:
+
+```dotenv
+DB_URL=jdbc:postgresql://localhost:5432/tourplanner
+DB_USERNAME=touruser
+DB_PASSWORD=tourpassword
+```
+
+If you use the default `postgres` user instead:
+
+```dotenv
+DB_URL=jdbc:postgresql://localhost:5432/tourplanner
+DB_USERNAME=postgres
+DB_PASSWORD=the_password_chosen_during_postgresql_installation
+```
+
+#### Option B: Command line / psql
 ```bash
 createdb tourplanner
 psql -d tourplanner -c "CREATE USER touruser WITH PASSWORD 'tourpassword';"
+psql -d tourplanner -c "GRANT ALL PRIVILEGES ON DATABASE tourplanner TO touruser;"
 # PostgreSQL 15+ revokes CREATE on the public schema by default — grant it:
 psql -d tourplanner -c "GRANT ALL ON SCHEMA public TO touruser;"
 psql -d tourplanner -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO touruser;"
@@ -133,23 +209,81 @@ psql -d tourplanner -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON S
 ```
 Hibernate creates the schema automatically (`ddl-auto=update`).
 
+On Windows PowerShell, if `createdb` is not in the PATH, use the full PostgreSQL bin path,
+for example:
+
+```powershell
+& "C:\Program Files\PostgreSQL\16\bin\createdb.exe" -U postgres tourplanner
+& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d tourplanner -c "CREATE USER touruser WITH PASSWORD 'tourpassword';"
+& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d tourplanner -c "GRANT ALL PRIVILEGES ON DATABASE tourplanner TO touruser;"
+& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d tourplanner -c "GRANT ALL ON SCHEMA public TO touruser;"
+& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d tourplanner -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO touruser;"
+& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d tourplanner -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO touruser;"
+```
+
+If PostgreSQL is not running, start the Windows service via **Services** or pgAdmin. The
+backend will fail with a connection error if nothing is listening on `localhost:5432`.
+
 ### 2. Backend (http://localhost:8080)
+Create `server/.env` first. Minimal working example:
+
+```dotenv
+DB_URL=jdbc:postgresql://localhost:5432/tourplanner
+DB_USERNAME=touruser
+DB_PASSWORD=tourpassword
+IMAGE_BASE_PATH=./uploads
+OPENROUTE_API_KEY=your_real_ors_key
+OPENROUTE_BASE_URL=https://api.openrouteservice.org
+JWT_SECRET=change-me-to-a-long-random-string-min-32-chars
+JWT_EXPIRATION_MS=86400000
+LOG_PATH=logs
+CORS_ALLOWED_ORIGINS=http://localhost:4200
+```
+
+Start the backend:
+
 ```bash
 cd server
 # on macOS
 set -a && . ./.env && set +a   # load configuration into the environment
-# on Windows
+./mvnw spring-boot:run
+```
+
+On Windows PowerShell:
+
+```powershell
+cd server
 Get-Content .env | ForEach-Object {
   if ($_ -and $_ -notmatch '^\s*#') {
     $name, $value = $_ -split '=', 2
     [Environment]::SetEnvironmentVariable($name, $value, 'Process')
   }
 }
-./mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
+
+If the backend starts successfully, it listens on:
+
+```text
+http://localhost:8080
+```
+
+Common database startup errors:
+- `Connection refused` / `localhost:5432` — PostgreSQL is not running.
+- `database "tourplanner" does not exist` — create the `tourplanner` database first.
+- `password authentication failed` — `DB_USERNAME` or `DB_PASSWORD` in `.env` is wrong.
+- `permission denied for schema public` — run the schema grants shown above.
 
 ### 3. Frontend (http://localhost:4200)
 ```bash
+cd frontend
+npm install
+npm start
+```
+
+On Windows PowerShell the same commands work:
+
+```powershell
 cd frontend
 npm install
 npm start
