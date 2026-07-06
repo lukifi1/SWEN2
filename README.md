@@ -20,7 +20,7 @@ explore everything through full-text search and an aggregate **statistics dashbo
 | Logging     | Log4j2 (`log4j2-spring.xml`)                                          |
 | Auth        | Stateless JWT (jjwt) + BCrypt password hashing                        |
 | External    | OpenRouteService (geocoding + directions), OpenStreetMap tiles        |
-| Tests       | JUnit 5, Mockito, AssertJ, Spring MockMvc (64 backend tests)          |
+| Tests       | JUnit 5, Mockito, AssertJ, Spring MockMvc (77 backend tests, 20 frontend tests)          |
 
 ---
 
