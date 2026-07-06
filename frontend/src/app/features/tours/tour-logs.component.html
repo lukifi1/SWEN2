@@ -13,30 +13,45 @@
       <div class="form-grid">
         <div>
           <label for="log-date">Date / time</label>
-          <input id="log-date" type="datetime-local" formControlName="dateTime" />
+          <input id="log-date" type="datetime-local" formControlName="dateTime" placeholder="Select date and time" />
           @if (form.controls.dateTime.touched && form.controls.dateTime.invalid) {
             <span class="field-error">Date/time is required.</span>
           }
         </div>
         <div>
           <label for="log-difficulty">Difficulty (1-5)</label>
-          <input id="log-difficulty" type="number" min="1" max="5" formControlName="difficulty" />
+          <input id="log-difficulty" type="number" min="1" max="5" step="1" formControlName="difficulty" placeholder="e.g. 3" />
+          @if (form.controls.difficulty.touched && form.controls.difficulty.invalid) {
+            <span class="field-error">Difficulty must be a whole number from 1 to 5.</span>
+          }
         </div>
         <div>
           <label for="log-distance">Total distance (km)</label>
-          <input id="log-distance" type="number" min="0" step="0.1" formControlName="totalDistance" />
+          <input id="log-distance" type="number" min="0" step="0.1" formControlName="totalDistance" placeholder="e.g. 12.5" />
+          @if (form.controls.totalDistance.touched && form.controls.totalDistance.invalid) {
+            <span class="field-error">Distance must be 0 or greater.</span>
+          }
         </div>
         <div>
           <label for="log-time">Total time (h)</label>
-          <input id="log-time" type="number" min="0" step="0.1" formControlName="totalTime" />
+          <input id="log-time" type="number" min="0" step="0.1" formControlName="totalTime" placeholder="e.g. 2.5" />
+          @if (form.controls.totalTime.touched && form.controls.totalTime.invalid) {
+            <span class="field-error">Time must be 0 or greater.</span>
+          }
         </div>
         <div>
           <label for="log-rating">Rating (1-5)</label>
-          <input id="log-rating" type="number" min="1" max="5" formControlName="rating" />
+          <input id="log-rating" type="number" min="1" max="5" step="1" formControlName="rating" placeholder="e.g. 4" />
+          @if (form.controls.rating.touched && form.controls.rating.invalid) {
+            <span class="field-error">Rating must be a whole number from 1 to 5.</span>
+          }
         </div>
         <div class="full-width">
           <label for="log-comment">Comment</label>
-          <textarea id="log-comment" formControlName="comment"></textarea>
+          <textarea id="log-comment" formControlName="comment" placeholder="Add notes about this tour"></textarea>
+          @if (form.controls.comment.touched && form.controls.comment.invalid) {
+            <span class="field-error">Comment must not exceed 3000 characters.</span>
+          }
         </div>
       </div>
       <div class="button-row">

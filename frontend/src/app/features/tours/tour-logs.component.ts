@@ -1,9 +1,25 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnChanges, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { TourLog } from '../../core/models/tour.model';
 import { TourLogsViewModel } from './tour-logs.viewmodel';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
+
+function wholeNumberValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (value === null || value === '') {
+    return null;
+  }
+
+  return Number.isInteger(Number(value)) ? null : { wholeNumber: true };
+}
 
 @Component({
   selector: 'app-tour-logs',
@@ -20,13 +36,23 @@ export class TourLogsComponent implements OnChanges {
 
   readonly editingId = signal<number | null>(null);
 
-  readonly form = this.fb.nonNullable.group({
-    dateTime: ['', Validators.required],
-    comment: ['', Validators.maxLength(3000)],
-    difficulty: [3, [Validators.required, Validators.min(1), Validators.max(5)]],
-    totalDistance: [0, [Validators.required, Validators.min(0)]],
-    totalTime: [0, [Validators.required, Validators.min(0)]],
-    rating: [3, [Validators.required, Validators.min(1), Validators.max(5)]],
+  readonly form = this.fb.group({
+    dateTime: this.fb.nonNullable.control('', Validators.required),
+    comment: this.fb.nonNullable.control('', Validators.maxLength(3000)),
+    difficulty: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(5),
+      wholeNumberValidator,
+    ]),
+    totalDistance: new FormControl<number | null>(null, [Validators.required, Validators.min(0)]),
+    totalTime: new FormControl<number | null>(null, [Validators.required, Validators.min(0)]),
+    rating: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(5),
+      wholeNumberValidator,
+    ]),
   });
 
   ngOnChanges(): void {
@@ -39,7 +65,15 @@ export class TourLogsComponent implements OnChanges {
       this.form.markAllAsTouched();
       return;
     }
-    const dto = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const dto = {
+      dateTime: raw.dateTime,
+      comment: raw.comment,
+      difficulty: raw.difficulty!,
+      totalDistance: raw.totalDistance!,
+      totalTime: raw.totalTime!,
+      rating: raw.rating!,
+    };
     const id = this.editingId();
     if (id !== null) {
       this.vm.update(id, dto);
@@ -73,10 +107,10 @@ export class TourLogsComponent implements OnChanges {
     this.form.reset({
       dateTime: '',
       comment: '',
-      difficulty: 3,
-      totalDistance: 0,
-      totalTime: 0,
-      rating: 3,
+      difficulty: null,
+      totalDistance: null,
+      totalTime: null,
+      rating: null,
     });
   }
 
