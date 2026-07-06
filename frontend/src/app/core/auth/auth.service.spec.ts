@@ -1,22 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { AuthApiService } from '../api/auth-api.service';
-import { AuthResponse, Credentials } from '../models/auth.model';
+import { AuthResponse } from '../models/auth.model';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
-  let api: jasmine.SpyObj<AuthApiService>;
   let service: AuthService;
 
-  const credentials: Credentials = { username: 'lukas', password: 'secret123' };
   const response: AuthResponse = { token: 'jwt-token', username: 'lukas' };
 
   beforeEach(() => {
     localStorage.clear();
-    api = jasmine.createSpyObj<AuthApiService>('AuthApiService', ['login', 'register']);
 
     TestBed.configureTestingModule({
-      providers: [AuthService, { provide: AuthApiService, useValue: api }],
+      providers: [AuthService],
     });
 
     service = TestBed.inject(AuthService);
@@ -26,10 +21,8 @@ describe('AuthService', () => {
     localStorage.clear();
   });
 
-  it('stores the token and username after login', () => {
-    api.login.and.returnValue(of(response));
-
-    service.login(credentials).subscribe();
+  it('stores the token and username in the current session', () => {
+    service.storeSession(response);
 
     expect(service.token()).toBe('jwt-token');
     expect(service.username()).toBe('lukas');
@@ -37,19 +30,8 @@ describe('AuthService', () => {
     expect(localStorage.getItem('tp_token')).toBe('jwt-token');
   });
 
-  it('stores the token and username after registration', () => {
-    api.register.and.returnValue(of(response));
-
-    service.register(credentials).subscribe();
-
-    expect(api.register).toHaveBeenCalledWith(credentials);
-    expect(service.isAuthenticated()).toBeTrue();
-    expect(localStorage.getItem('tp_user')).toBe('lukas');
-  });
-
   it('clears the session on logout', () => {
-    api.login.and.returnValue(of(response));
-    service.login(credentials).subscribe();
+    service.storeSession(response);
 
     service.logout();
 
@@ -66,5 +48,18 @@ describe('AuthService', () => {
 
     expect(localStorage.getItem('tp_token')).toBeNull();
     expect(localStorage.getItem('tp_user')).toBeNull();
+  });
+
+  it('initializes the session from localStorage', () => {
+    localStorage.setItem('tp_token', 'stored-token');
+    localStorage.setItem('tp_user', 'stored-user');
+    TestBed.resetTestingModule();
+
+    TestBed.configureTestingModule({ providers: [AuthService] });
+    service = TestBed.inject(AuthService);
+
+    expect(service.token()).toBe('stored-token');
+    expect(service.username()).toBe('stored-user');
+    expect(service.isAuthenticated()).toBeTrue();
   });
 });

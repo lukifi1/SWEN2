@@ -1,11 +1,13 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthApiService } from '../../core/api/auth-api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { extractMessage } from '../../core/api/http-error';
 import { Credentials } from '../../core/models/auth.model';
 
 @Injectable()
 export class AuthViewModel {
+  private api = inject(AuthApiService);
   private auth = inject(AuthService);
   private router = inject(Router);
 
@@ -15,14 +17,14 @@ export class AuthViewModel {
 
   login(credentials: Credentials): void {
     this.runAuthCommand(
-      this.auth.login(credentials),
+      this.api.login(credentials),
       'Login failed.',
     );
   }
 
   register(credentials: Credentials): void {
     this.runAuthCommand(
-      this.auth.register(credentials),
+      this.api.register(credentials),
       'Registration failed.',
     );
   }
@@ -32,14 +34,15 @@ export class AuthViewModel {
   }
 
   private runAuthCommand(
-    request: ReturnType<AuthService['login']>,
+    request: ReturnType<AuthApiService['login']>,
     fallbackMessage: string,
   ): void {
     this.loading.set(true);
     this.error.set(null);
 
     request.subscribe({
-      next: () => {
+      next: (res) => {
+        this.auth.storeSession(res);
         this.loading.set(false);
         void this.router.navigate(['/tours']);
       },
