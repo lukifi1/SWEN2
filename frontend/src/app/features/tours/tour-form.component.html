@@ -12,8 +12,8 @@
     <div class="alert alert-error">{{ uploadError() }}</div>
   }
 
-  @if (locationLookupError()) {
-    <div class="alert alert-error">{{ locationLookupError() }}</div>
+  @if (vm.locationLookupError()) {
+    <div class="alert alert-error">{{ vm.locationLookupError() }}</div>
   }
 
   <form [formGroup]="form" (ngSubmit)="submit()">
@@ -44,14 +44,14 @@
             formControlName="fromLocation"
             placeholder="e.g. Vienna"
             autocomplete="off"
-            (blur)="clearSuggestions('fromLocation')" />
-          @if (fromSuggestions().length > 0) {
+            (blur)="vm.clearSuggestions('fromLocation')" />
+          @if (vm.fromSuggestions().length > 0) {
             <div class="suggestions" role="listbox">
-              @for (suggestion of fromSuggestions(); track suggestion.label) {
+              @for (suggestion of vm.fromSuggestions(); track suggestion.label) {
                 <button
                   type="button"
                   class="suggestion"
-                  (mousedown)="applySuggestion('fromLocation', suggestion)">
+                  (mousedown)="vm.applySuggestion('fromLocation', form.controls.fromLocation, suggestion)">
                   {{ suggestion.label }}
                 </button>
               }
@@ -72,14 +72,14 @@
             formControlName="toLocation"
             placeholder="e.g. Graz"
             autocomplete="off"
-            (blur)="clearSuggestions('toLocation')" />
-          @if (toSuggestions().length > 0) {
+            (blur)="vm.clearSuggestions('toLocation')" />
+          @if (vm.toSuggestions().length > 0) {
             <div class="suggestions" role="listbox">
-              @for (suggestion of toSuggestions(); track suggestion.label) {
+              @for (suggestion of vm.toSuggestions(); track suggestion.label) {
                 <button
                   type="button"
                   class="suggestion"
-                  (mousedown)="applySuggestion('toLocation', suggestion)">
+                  (mousedown)="vm.applySuggestion('toLocation', form.controls.toLocation, suggestion)">
                   {{ suggestion.label }}
                 </button>
               }
