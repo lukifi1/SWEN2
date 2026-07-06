@@ -16,6 +16,9 @@ export class TourFormViewModel {
   readonly locationLookupError = signal<string | null>(null);
   readonly fromSuggestions = signal<LocationSuggestion[]>([]);
   readonly toSuggestions = signal<LocationSuggestion[]>([]);
+  readonly imagePath = signal<string | null>(null);
+  readonly uploadingImage = signal(false);
+  readonly uploadError = signal<string | null>(null);
 
   bindLocationAutocomplete(controlName: LocationControlName, control: FormControl<string>): void {
     control.valueChanges
@@ -57,6 +60,31 @@ export class TourFormViewModel {
     this.fromSuggestions.set([]);
     this.toSuggestions.set([]);
     this.locationLookupError.set(null);
+  }
+
+  setImagePath(path: string | null): void {
+    this.imagePath.set(path);
+    this.uploadError.set(null);
+  }
+
+  uploadImage(file: File): void {
+    this.uploadingImage.set(true);
+    this.uploadError.set(null);
+    this.dataApi.uploadImage(file).subscribe({
+      next: (res) => {
+        this.imagePath.set(res.filename);
+        this.uploadingImage.set(false);
+      },
+      error: (err) => {
+        this.uploadError.set(extractMessage(err, 'Image upload failed.'));
+        this.uploadingImage.set(false);
+      },
+    });
+  }
+
+  imageUrl(): string | null {
+    const path = this.imagePath();
+    return path ? this.dataApi.imageUrl(path) : null;
   }
 
   private suggestionsFor(controlName: LocationControlName) {

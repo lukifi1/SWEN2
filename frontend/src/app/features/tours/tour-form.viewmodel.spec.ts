@@ -16,7 +16,11 @@ describe('TourFormViewModel', () => {
   };
 
   beforeEach(() => {
-    dataApi = jasmine.createSpyObj<DataApiService>('DataApiService', ['locationSuggestions']);
+    dataApi = jasmine.createSpyObj<DataApiService>('DataApiService', [
+      'locationSuggestions',
+      'uploadImage',
+      'imageUrl',
+    ]);
 
     TestBed.configureTestingModule({
       providers: [
@@ -61,5 +65,36 @@ describe('TourFormViewModel', () => {
 
     expect(control.value).toBe('Vienna, Austria');
     expect(vm.toSuggestions()).toEqual([]);
+  });
+
+  it('uploads an image and stores the returned filename', () => {
+    const file = new File(['image'], 'tour.png', { type: 'image/png' });
+    dataApi.uploadImage.and.returnValue(of({ filename: 'tour-1.png' }));
+
+    vm.uploadImage(file);
+
+    expect(dataApi.uploadImage).toHaveBeenCalledWith(file);
+    expect(vm.imagePath()).toBe('tour-1.png');
+    expect(vm.uploadingImage()).toBeFalse();
+    expect(vm.uploadError()).toBeNull();
+  });
+
+  it('exposes upload errors and clears the loading state', () => {
+    const file = new File(['image'], 'tour.png', { type: 'image/png' });
+    dataApi.uploadImage.and.returnValue(throwError(() => new Error('failed')));
+
+    vm.uploadImage(file);
+
+    expect(vm.uploadError()).toBe('Image upload failed.');
+    expect(vm.uploadingImage()).toBeFalse();
+  });
+
+  it('builds an image preview URL from the stored image path', () => {
+    dataApi.imageUrl.and.returnValue('/api/images/tour-1.png');
+
+    vm.setImagePath('tour-1.png');
+
+    expect(vm.imageUrl()).toBe('/api/images/tour-1.png');
+    expect(dataApi.imageUrl).toHaveBeenCalledWith('tour-1.png');
   });
 });

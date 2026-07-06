@@ -8,8 +8,8 @@
     <strong>From</strong> and <strong>To</strong> via OpenRouteService when you save.
   </p>
 
-  @if (uploadError()) {
-    <div class="alert alert-error">{{ uploadError() }}</div>
+  @if (vm.uploadError()) {
+    <div class="alert alert-error">{{ vm.uploadError() }}</div>
   }
 
   @if (vm.locationLookupError()) {
@@ -99,14 +99,14 @@
       <div class="full-width image-upload">
         <label>Tour image</label>
         <div class="image-row">
-          @if (imageUrl(); as url) {
+          @if (vm.imageUrl(); as url) {
             <img [src]="url" alt="Tour image preview" class="image-preview" />
           } @else {
             <div class="image-preview placeholder">No image</div>
           }
           <div>
             <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-            @if (uploadingImage()) {
+            @if (vm.uploadingImage()) {
               <span class="muted">Uploading…</span>
             }
           </div>
@@ -119,7 +119,7 @@
         [label]="saving ? 'Saving…' : (isEdit ? 'Save changes' : 'Create tour')"
         type="submit"
         variant="primary"
-        [disabled]="saving || uploadingImage()">
+        [disabled]="saving || vm.uploadingImage()">
       </app-action-button>
       <app-action-button label="Cancel" type="button" variant="secondary"
                          (buttonClick)="cancel.emit()">
