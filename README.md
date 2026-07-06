@@ -129,7 +129,15 @@ Hibernate creates the schema automatically (`ddl-auto=update`).
 ### 2. Backend (http://localhost:8080)
 ```bash
 cd server
+# on macOS
 set -a && . ./.env && set +a   # load configuration into the environment
+# on Windows
+Get-Content .env | ForEach-Object {
+  if ($_ -and $_ -notmatch '^\s*#') {
+    $name, $value = $_ -split '=', 2
+    [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+  }
+}
 ./mvnw spring-boot:run
 ```
 
