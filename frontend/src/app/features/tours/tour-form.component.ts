@@ -77,7 +77,7 @@ export class TourFormComponent implements OnChanges {
       this.form.markAllAsTouched();
       return;
     }
-    this.save.emit({ ...this.form.getRawValue(), imagePath: this.vm.imagePath() });
+    this.save.emit(this.vm.toTourCreate(this.form.getRawValue()));
   }
 
   get isEdit(): boolean {

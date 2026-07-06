@@ -103,4 +103,25 @@ describe('TourFormViewModel', () => {
     expect(vm.displayImageUrl()).toBe('/api/images/tour-1.png');
     expect(dataApi.imageUrl).toHaveBeenCalledWith('tour-1.png');
   });
+
+  it('maps form values to a tour create DTO with the current image path', () => {
+    vm.setImagePath('tour-1.png');
+
+    const dto = vm.toTourCreate({
+      name: 'City ride',
+      description: 'Short route',
+      fromLocation: 'Vienna',
+      toLocation: 'Graz',
+      transportType: 'Bike',
+    });
+
+    expect(dto).toEqual({
+      name: 'City ride',
+      description: 'Short route',
+      fromLocation: 'Vienna',
+      toLocation: 'Graz',
+      transportType: 'Bike',
+      imagePath: 'tour-1.png',
+    });
+  });
 });

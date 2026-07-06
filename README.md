@@ -152,7 +152,7 @@ npm start
 
 ## Testing
 
-64 backend tests (unit + Mockito + a MockMvc integration test) covering computed attributes,
+77 backend tests (unit + Mockito + a MockMvc integration test) covering computed attributes,
 JWT, auth, tour & log services, search, stats, import/export and the ORS client.
 
 ```bash

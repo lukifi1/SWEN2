@@ -4,9 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { DataApiService } from '../../core/api/data-api.service';
 import { extractMessage } from '../../core/api/http-error';
-import { LocationSuggestion } from '../../core/models/tour.model';
+import { LocationSuggestion, TourCreate } from '../../core/models/tour.model';
 
 export type LocationControlName = 'fromLocation' | 'toLocation';
+export type TourFormValue = Omit<TourCreate, 'imagePath'>;
 
 @Injectable()
 export class TourFormViewModel {
@@ -89,6 +90,13 @@ export class TourFormViewModel {
         this.uploadingImage.set(false);
       },
     });
+  }
+
+  toTourCreate(formValue: TourFormValue): TourCreate {
+    return {
+      ...formValue,
+      imagePath: this.imagePath(),
+    };
   }
 
   private suggestionsFor(controlName: LocationControlName) {
