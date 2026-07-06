@@ -1,59 +1,68 @@
-# Frontend
+# TourPlanner Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Angular 19 frontend for the TourPlanner application. The frontend follows MVVM with
+standalone components, Angular signals, computed state, RxJS observables and injectable
+view-models.
 
-## Development server
+## MVVM Structure
 
-To start a local development server, run:
+- `src/app/core/models` — model interfaces used by the frontend.
+- `src/app/core/api` — injectable HttpClient services for backend access.
+- `src/app/core/auth/auth.service.ts` — global JWT/session state and localStorage persistence.
+- `src/app/features/**/*.viewmodel.ts` — view-models with signal state, computed UI state,
+  commands, API subscriptions and error/loading handling.
+- `src/app/features/**/*.component.ts` and `*.html` — views. Components bind forms and
+  forward UI events to view-model commands.
+- `src/app/shared` — reusable UI components such as action buttons, statistic cards and
+  charts.
 
-```bash
-ng serve
-```
+Important view-models:
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- `AuthViewModel` — login/register UI state, API calls, session storage and navigation.
+- `ToursViewModel` — tour list, selection, CRUD, import/export and derived UI state.
+- `TourFormViewModel` — location autocomplete, image upload, preview URL and DTO mapping.
+- `TourLogsViewModel` — tour-log loading and mutation commands.
+- `StatsViewModel` — statistics dashboard loading and state.
 
-## Code scaffolding
+## Development
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+Install dependencies and start the local dev server:
 
 ```bash
-ng build
+npm install
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The app runs at `http://localhost:4200/` and expects the backend at `http://localhost:8080`.
 
-## Running unit tests
+## Testing
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Run the Angular/Jasmine unit tests once in headless Chrome:
 
 ```bash
-ng test
+npm test -- --watch=false --browsers=ChromeHeadless
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run the interactive Karma watcher during development:
 
 ```bash
-ng e2e
+npm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Run TypeScript compile checks without opening a browser:
 
-## Additional Resources
+```bash
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The frontend tests cover API services, auth session state, view-model command behavior,
+autocomplete, image upload, DTO mapping and formatting helpers.
+
+## Build
+
+```bash
+npm run build
+```
+
+The build output is written to `dist/frontend`.

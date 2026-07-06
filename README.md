@@ -20,7 +20,7 @@ explore everything through full-text search and an aggregate **statistics dashbo
 | Logging     | Log4j2 (`log4j2-spring.xml`)                                          |
 | Auth        | Stateless JWT (jjwt) + BCrypt password hashing                        |
 | External    | OpenRouteService (geocoding + directions), OpenStreetMap tiles        |
-| Tests       | JUnit 5, Mockito, AssertJ, Spring MockMvc (77 backend tests, 20 frontend tests)          |
+| Tests       | JUnit 5, Mockito, AssertJ, Spring MockMvc, Jasmine/Karma, Angular TestBed |
 
 ---
 
@@ -45,10 +45,17 @@ Each layer only calls the layer directly below it. `DataAccessException` from th
 caught in services and rethrown as a `PersistenceFailedException` (business exception).
 
 ### Frontend — MVVM
-- **Model** — `core/models` (interfaces) + `core/api` (HttpClient services).
-- **ViewModel** — `features/**/**.viewmodel.ts` (`@Injectable`, signal-based state +
-  commands; e.g. `ToursViewModel`, `TourLogsViewModel`, `StatsViewModel`, `AuthService`).
-- **View** — components that bind to view-model signals and contain no business logic.
+- **Model** — `core/models` contains TypeScript interfaces, while `core/api` contains
+  injectable HttpClient services for backend access.
+- **ViewModel** — `features/**/*.viewmodel.ts` contains injectable, signal-based UI state,
+  computed state and commands. Examples: `AuthViewModel`, `ToursViewModel`,
+  `TourFormViewModel`, `TourLogsViewModel`, `StatsViewModel`.
+- **View** — standalone components and templates bind to view-model signals and forward UI
+  events to view-model commands. Service subscriptions, loading/error handling, import/export,
+  autocomplete, image upload and DTO mapping are kept in view-models.
+- **Session state** — `AuthService` is intentionally not a view-model. It stores the global
+  JWT/session signals and persists them in `localStorage`; `AuthViewModel` owns login and
+  registration flow orchestration.
 
 ### Design patterns
 - **Strategy** — `ImportExportStrategy` with `GpxImportExportStrategy` as the active
@@ -158,6 +165,22 @@ JWT, auth, tour & log services, search, stats, import/export and the ORS client.
 ```bash
 cd server
 ./mvnw test
+```
+
+Frontend tests cover API services, auth/session state, view-model commands, autocomplete,
+image upload, DTO mapping and formatting helpers.
+
+```bash
+cd frontend
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
+For fast frontend compile checks without launching a browser:
+
+```bash
+cd frontend
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
 ```
 
 ---
