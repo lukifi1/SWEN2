@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
@@ -19,6 +19,15 @@ export class TourFormViewModel {
   readonly imagePath = signal<string | null>(null);
   readonly uploadingImage = signal(false);
   readonly uploadError = signal<string | null>(null);
+  readonly hasLocationLookupError = computed(() => this.locationLookupError() !== null);
+  readonly hasFromSuggestions = computed(() => this.fromSuggestions().length > 0);
+  readonly hasToSuggestions = computed(() => this.toSuggestions().length > 0);
+  readonly hasUploadError = computed(() => this.uploadError() !== null);
+  readonly hasImage = computed(() => this.imagePath() !== null);
+  readonly displayImageUrl = computed(() => {
+    const path = this.imagePath();
+    return path ? this.dataApi.imageUrl(path) : null;
+  });
 
   bindLocationAutocomplete(controlName: LocationControlName, control: FormControl<string>): void {
     control.valueChanges
@@ -80,11 +89,6 @@ export class TourFormViewModel {
         this.uploadingImage.set(false);
       },
     });
-  }
-
-  imageUrl(): string | null {
-    const path = this.imagePath();
-    return path ? this.dataApi.imageUrl(path) : null;
   }
 
   private suggestionsFor(controlName: LocationControlName) {

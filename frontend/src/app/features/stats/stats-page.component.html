@@ -4,9 +4,9 @@
 
 @if (vm.loading()) {
   <div class="empty-state">Loading statistics…</div>
-} @else if (vm.error()) {
+} @else if (vm.hasError()) {
   <div class="alert alert-error">{{ vm.error() }}</div>
-} @else if (vm.stats()) {
+} @else if (vm.hasStats()) {
   @if (vm.stats(); as stats) {
 
   <div class="cards-grid">

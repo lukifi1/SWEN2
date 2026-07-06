@@ -3,7 +3,7 @@
     <h2>Tour Logs</h2>
   </div>
 
-  @if (vm.error()) {
+  @if (vm.hasError()) {
     <div class="alert alert-error">{{ vm.error() }}</div>
   }
 
@@ -52,9 +52,7 @@
     </form>
   </div>
 
-  @if (vm.logs().length === 0) {
-    <div class="empty-state">No logs recorded yet.</div>
-  } @else {
+  @if (vm.hasLogs()) {
     <div class="log-list">
       @for (log of vm.logs(); track log.id) {
         <div class="log-card">
@@ -77,5 +75,7 @@
         </div>
       }
     </div>
+  } @else {
+    <div class="empty-state">No logs recorded yet.</div>
   }
 </div>

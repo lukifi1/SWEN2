@@ -26,6 +26,12 @@ export class ToursViewModel {
 
   readonly hasTours = computed(() => this.tours().length > 0);
   readonly hasSelectedTour = computed(() => this.selectedTour() !== null);
+  readonly selectedTourId = computed(() => this.selectedTour()?.id ?? null);
+  readonly hasError = computed(() => this.error() !== null);
+  readonly hasImportMessage = computed(() => this.importMessage() !== null);
+  readonly isCreating = computed(() => this.mode() === 'create');
+  readonly isEditing = computed(() => this.mode() === 'edit');
+  readonly isFormVisible = computed(() => this.isCreating() || this.isEditing());
 
   load(): void {
     this.runList(this.api.list(), 'Failed to load tours.');

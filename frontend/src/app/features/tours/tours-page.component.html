@@ -21,10 +21,10 @@
   </div>
 </div>
 
-@if (vm.error()) {
+@if (vm.hasError()) {
   <div class="alert alert-error">{{ vm.error() }}</div>
 }
-@if (vm.importMessage()) {
+@if (vm.hasImportMessage()) {
   <div class="alert alert-success">{{ vm.importMessage() }}</div>
 }
 
@@ -32,16 +32,16 @@
   <aside class="sidebar">
     <app-tour-list
       [tours]="vm.tours()"
-      [selectedId]="vm.selectedTour()?.id ?? null"
+      [selectedId]="vm.selectedTourId()"
       [loading]="vm.loading()"
       (tourSelected)="vm.select($event)">
     </app-tour-list>
   </aside>
 
   <section class="content">
-    @if (vm.mode() === 'create' || vm.mode() === 'edit') {
+    @if (vm.isFormVisible()) {
       <app-tour-form
-        [tour]="vm.mode() === 'edit' ? vm.selectedTour() : null"
+        [tour]="vm.isEditing() ? vm.selectedTour() : null"
         [saving]="vm.loading()"
         (save)="vm.save($event)"
         (cancel)="vm.cancelForm()">

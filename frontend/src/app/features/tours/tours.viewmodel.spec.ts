@@ -60,6 +60,8 @@ describe('ToursViewModel', () => {
     expect(vm.tours()).toEqual([firstTour, secondTour]);
     expect(vm.selectedTour()).toEqual(firstTour);
     expect(vm.hasTours()).toBeTrue();
+    expect(vm.hasSelectedTour()).toBeTrue();
+    expect(vm.selectedTourId()).toBe(firstTour.id);
     expect(vm.loading()).toBeFalse();
   });
 
@@ -75,12 +77,16 @@ describe('ToursViewModel', () => {
     api.create.and.returnValue(of(secondTour));
 
     vm.startCreate();
+    expect(vm.isCreating()).toBeTrue();
+    expect(vm.isFormVisible()).toBeTrue();
+
     vm.save(dto);
 
     expect(api.create).toHaveBeenCalledWith(dto);
     expect(vm.selectedTour()).toEqual(secondTour);
     expect(vm.tours()).toEqual([secondTour]);
     expect(vm.mode()).toBe('view');
+    expect(vm.isFormVisible()).toBeFalse();
   });
 
   it('exports the selected tour through the data API', () => {
@@ -104,6 +110,7 @@ describe('ToursViewModel', () => {
 
     expect(dataApi.importTours).toHaveBeenCalledWith(file);
     expect(vm.importMessage()).toBe('Imported 1 tour(s).');
+    expect(vm.hasImportMessage()).toBeTrue();
     expect(api.list).toHaveBeenCalled();
   });
 });

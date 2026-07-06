@@ -42,7 +42,9 @@ describe('TourFormViewModel', () => {
 
     expect(dataApi.locationSuggestions).toHaveBeenCalledWith('Vie');
     expect(vm.fromSuggestions()).toEqual([vienna]);
+    expect(vm.hasFromSuggestions()).toBeTrue();
     expect(vm.locationLookupError()).toBeNull();
+    expect(vm.hasLocationLookupError()).toBeFalse();
   }));
 
   it('clears suggestions and exposes lookup errors', fakeAsync(() => {
@@ -55,6 +57,7 @@ describe('TourFormViewModel', () => {
 
     expect(vm.toSuggestions()).toEqual([]);
     expect(vm.locationLookupError()).toBe('Location lookup failed.');
+    expect(vm.hasLocationLookupError()).toBeTrue();
   }));
 
   it('applies a selected suggestion to the target control', () => {
@@ -75,8 +78,10 @@ describe('TourFormViewModel', () => {
 
     expect(dataApi.uploadImage).toHaveBeenCalledWith(file);
     expect(vm.imagePath()).toBe('tour-1.png');
+    expect(vm.hasImage()).toBeTrue();
     expect(vm.uploadingImage()).toBeFalse();
     expect(vm.uploadError()).toBeNull();
+    expect(vm.hasUploadError()).toBeFalse();
   });
 
   it('exposes upload errors and clears the loading state', () => {
@@ -86,6 +91,7 @@ describe('TourFormViewModel', () => {
     vm.uploadImage(file);
 
     expect(vm.uploadError()).toBe('Image upload failed.');
+    expect(vm.hasUploadError()).toBeTrue();
     expect(vm.uploadingImage()).toBeFalse();
   });
 
@@ -94,7 +100,7 @@ describe('TourFormViewModel', () => {
 
     vm.setImagePath('tour-1.png');
 
-    expect(vm.imageUrl()).toBe('/api/images/tour-1.png');
+    expect(vm.displayImageUrl()).toBe('/api/images/tour-1.png');
     expect(dataApi.imageUrl).toHaveBeenCalledWith('tour-1.png');
   });
 });

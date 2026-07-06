@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { TourLogApiService } from '../../core/api/tour-log-api.service';
 import { extractMessage } from '../../core/api/http-error';
 import { TourLog, TourLogCreate } from '../../core/models/tour.model';
@@ -16,6 +16,8 @@ export class TourLogsViewModel {
 
   readonly logs = signal<TourLog[]>([]);
   readonly error = signal<string | null>(null);
+  readonly hasLogs = computed(() => this.logs().length > 0);
+  readonly hasError = computed(() => this.error() !== null);
   private tourId = 0;
 
   load(tourId: number): void {

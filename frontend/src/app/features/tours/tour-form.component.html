@@ -8,11 +8,11 @@
     <strong>From</strong> and <strong>To</strong> via OpenRouteService when you save.
   </p>
 
-  @if (vm.uploadError()) {
+  @if (vm.hasUploadError()) {
     <div class="alert alert-error">{{ vm.uploadError() }}</div>
   }
 
-  @if (vm.locationLookupError()) {
+  @if (vm.hasLocationLookupError()) {
     <div class="alert alert-error">{{ vm.locationLookupError() }}</div>
   }
 
@@ -45,7 +45,7 @@
             placeholder="e.g. Vienna"
             autocomplete="off"
             (blur)="vm.clearSuggestions('fromLocation')" />
-          @if (vm.fromSuggestions().length > 0) {
+          @if (vm.hasFromSuggestions()) {
             <div class="suggestions" role="listbox">
               @for (suggestion of vm.fromSuggestions(); track suggestion.label) {
                 <button
@@ -73,7 +73,7 @@
             placeholder="e.g. Graz"
             autocomplete="off"
             (blur)="vm.clearSuggestions('toLocation')" />
-          @if (vm.toSuggestions().length > 0) {
+          @if (vm.hasToSuggestions()) {
             <div class="suggestions" role="listbox">
               @for (suggestion of vm.toSuggestions(); track suggestion.label) {
                 <button
@@ -99,7 +99,7 @@
       <div class="full-width image-upload">
         <label>Tour image</label>
         <div class="image-row">
-          @if (vm.imageUrl(); as url) {
+          @if (vm.displayImageUrl(); as url) {
             <img [src]="url" alt="Tour image preview" class="image-preview" />
           } @else {
             <div class="image-preview placeholder">No image</div>

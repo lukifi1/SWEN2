@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { StatsApiService } from '../../core/api/stats-api.service';
 import { extractMessage } from '../../core/api/http-error';
 import { Stats } from '../../core/models/stats.model';
@@ -10,6 +10,8 @@ export class StatsViewModel {
   readonly stats = signal<Stats | null>(null);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly hasStats = computed(() => this.stats() !== null);
+  readonly hasError = computed(() => this.error() !== null);
 
   load(): void {
     this.loading.set(true);
