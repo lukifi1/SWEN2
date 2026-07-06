@@ -1,9 +1,11 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { TourApiService } from '../../core/api/tour-api.service';
+import { DataApiService } from '../../core/api/data-api.service';
 import { extractMessage } from '../../core/api/http-error';
 import { Tour, TourCreate } from '../../core/models/tour.model';
 
 export type TourViewMode = 'view' | 'create' | 'edit';
+export type TourExportHandler = (blob: Blob, filename: string) => void;
 
 /**
  * View-model for the tours page. Holds all tour-related UI state as signals and
@@ -12,15 +14,18 @@ export type TourViewMode = 'view' | 'create' | 'edit';
 @Injectable()
 export class ToursViewModel {
   private api = inject(TourApiService);
+  private dataApi = inject(DataApiService);
 
   readonly tours = signal<Tour[]>([]);
   readonly selectedTour = signal<Tour | null>(null);
   readonly searchTerm = signal('');
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly importMessage = signal<string | null>(null);
   readonly mode = signal<TourViewMode>('view');
 
   readonly hasTours = computed(() => this.tours().length > 0);
+  readonly hasSelectedTour = computed(() => this.selectedTour() !== null);
 
   load(): void {
     this.runList(this.api.list(), 'Failed to load tours.');
@@ -90,6 +95,32 @@ export class ToursViewModel {
     });
   }
 
+  exportSelected(onExportReady: TourExportHandler): void {
+    const selected = this.selectedTour();
+    if (!selected) {
+      this.error.set('Select a tour before exporting.');
+      return;
+    }
+
+    this.error.set(null);
+    this.dataApi.exportTour(selected.id).subscribe({
+      next: (blob) => onExportReady(blob, this.exportFilename(selected.name)),
+      error: (err) => this.error.set(extractMessage(err, 'Export failed.')),
+    });
+  }
+
+  importTours(file: File): void {
+    this.importMessage.set(null);
+    this.error.set(null);
+    this.dataApi.importTours(file).subscribe({
+      next: (res) => {
+        this.importMessage.set(`Imported ${res.imported} tour(s).`);
+        this.load();
+      },
+      error: (err) => this.error.set(extractMessage(err, 'Import failed.')),
+    });
+  }
+
   /** Reloads the selected tour so recomputed attributes (popularity, ...) show up. */
   refreshSelected(): void {
     const selected = this.selectedTour();
@@ -134,6 +165,13 @@ export class ToursViewModel {
       copy[index] = tour;
       return copy;
     });
+  }
+
+  private exportFilename(name: string): string {
+    const safeName = name.trim().toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return `${safeName || 'tour'}.gpx`;
   }
 
   private syncSelection(): void {

@@ -1,8 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ToursViewModel } from './tours.viewmodel';
 import { TourLogsViewModel } from './tour-logs.viewmodel';
-import { DataApiService } from '../../core/api/data-api.service';
-import { extractMessage } from '../../core/api/http-error';
 import { TourListComponent } from './tour-list.component';
 import { TourFormComponent } from './tour-form.component';
 import { TourDetailComponent } from './tour-detail.component';
@@ -18,9 +16,7 @@ import { ActionButtonComponent } from '../../shared/action-button/action-button.
 })
 export class ToursPageComponent implements OnInit {
   protected readonly vm = inject(ToursViewModel);
-  private readonly dataApi = inject(DataApiService);
 
-  readonly importMessage = signal<string | null>(null);
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
   ngOnInit(): void {
@@ -34,16 +30,7 @@ export class ToursPageComponent implements OnInit {
   }
 
   onExport(): void {
-    const selected = this.vm.selectedTour();
-    if (!selected) {
-      this.vm.error.set('Select a tour before exporting.');
-      return;
-    }
-
-    this.dataApi.exportTour(selected.id).subscribe({
-      next: (blob) => this.downloadBlob(blob, this.exportFilename(selected.name)),
-      error: (err) => this.vm.error.set(extractMessage(err, 'Export failed.')),
-    });
+    this.vm.exportSelected((blob, filename) => this.downloadBlob(blob, filename));
   }
 
   onImport(event: Event): void {
@@ -52,14 +39,7 @@ export class ToursPageComponent implements OnInit {
     if (!file) {
       return;
     }
-    this.importMessage.set(null);
-    this.dataApi.importTours(file).subscribe({
-      next: (res) => {
-        this.importMessage.set(`Imported ${res.imported} tour(s).`);
-        this.vm.load();
-      },
-      error: (err) => this.vm.error.set(extractMessage(err, 'Import failed.')),
-    });
+    this.vm.importTours(file);
     input.value = '';
   }
 
@@ -70,12 +50,5 @@ export class ToursPageComponent implements OnInit {
     anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
-  }
-
-  private exportFilename(name: string): string {
-    const safeName = name.trim().toLowerCase()
-      .replace(/[^a-z0-9-]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    return `${safeName || 'tour'}.gpx`;
   }
 }

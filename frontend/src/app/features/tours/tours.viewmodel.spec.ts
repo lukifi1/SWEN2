@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { DataApiService } from '../../core/api/data-api.service';
 import { TourApiService } from '../../core/api/tour-api.service';
 import { Tour, TourCreate } from '../../core/models/tour.model';
 import { ToursViewModel } from './tours.viewmodel';
 
 describe('ToursViewModel', () => {
   let api: jasmine.SpyObj<TourApiService>;
+  let dataApi: jasmine.SpyObj<DataApiService>;
   let vm: ToursViewModel;
 
   const firstTour: Tour = {
@@ -34,9 +36,17 @@ describe('ToursViewModel', () => {
       'update',
       'remove',
     ]);
+    dataApi = jasmine.createSpyObj<DataApiService>('DataApiService', [
+      'exportTour',
+      'importTours',
+    ]);
 
     TestBed.configureTestingModule({
-      providers: [ToursViewModel, { provide: TourApiService, useValue: api }],
+      providers: [
+        ToursViewModel,
+        { provide: TourApiService, useValue: api },
+        { provide: DataApiService, useValue: dataApi },
+      ],
     });
 
     vm = TestBed.inject(ToursViewModel);
@@ -71,5 +81,29 @@ describe('ToursViewModel', () => {
     expect(vm.selectedTour()).toEqual(secondTour);
     expect(vm.tours()).toEqual([secondTour]);
     expect(vm.mode()).toBe('view');
+  });
+
+  it('exports the selected tour through the data API', () => {
+    const blob = new Blob(['gpx']);
+    const onExportReady = jasmine.createSpy('onExportReady');
+    dataApi.exportTour.and.returnValue(of(blob));
+
+    vm.select(firstTour);
+    vm.exportSelected(onExportReady);
+
+    expect(dataApi.exportTour).toHaveBeenCalledWith(firstTour.id);
+    expect(onExportReady).toHaveBeenCalledWith(blob, 'first.gpx');
+  });
+
+  it('imports tours and reloads the list', () => {
+    const file = new File(['gpx'], 'tour.gpx');
+    dataApi.importTours.and.returnValue(of({ imported: 1 }));
+    api.list.and.returnValue(of([firstTour]));
+
+    vm.importTours(file);
+
+    expect(dataApi.importTours).toHaveBeenCalledWith(file);
+    expect(vm.importMessage()).toBe('Imported 1 tour(s).');
+    expect(api.list).toHaveBeenCalled();
   });
 });
