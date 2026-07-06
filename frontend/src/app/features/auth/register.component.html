@@ -3,8 +3,8 @@
     <h2>Create your account</h2>
     <p class="muted">Register to start planning tours.</p>
 
-    @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
+    @if (vm.hasError()) {
+      <div class="alert alert-error">{{ vm.error() }}</div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()">
@@ -35,7 +35,7 @@
       </div>
 
       <app-action-button label="Register" type="submit" variant="primary"
-                         [fullWidth]="true" [disabled]="loading()">
+                         [fullWidth]="true" [disabled]="vm.loading()">
       </app-action-button>
     </form>
 

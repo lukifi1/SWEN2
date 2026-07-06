@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -6,10 +6,9 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
-import { extractMessage } from '../../core/api/http-error';
+import { RouterLink } from '@angular/router';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
+import { AuthViewModel } from './auth.viewmodel';
 
 function passwordsMatch(group: AbstractControl): ValidationErrors | null {
   const password = group.get('password')?.value;
@@ -20,17 +19,14 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-register',
   standalone: true,
+  providers: [AuthViewModel],
   imports: [ReactiveFormsModule, RouterLink, ActionButtonComponent],
   templateUrl: './register.component.html',
   styleUrl: './auth.component.css',
 })
 export class RegisterComponent {
   private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-
-  readonly error = signal<string | null>(null);
-  readonly loading = signal(false);
+  protected readonly vm = inject(AuthViewModel);
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -46,15 +42,7 @@ export class RegisterComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.loading.set(true);
-    this.error.set(null);
     const { username, password } = this.form.getRawValue();
-    this.auth.register({ username, password }).subscribe({
-      next: () => this.router.navigate(['/tours']),
-      error: (err) => {
-        this.error.set(extractMessage(err, 'Registration failed.'));
-        this.loading.set(false);
-      },
-    });
+    this.vm.register({ username, password });
   }
 }

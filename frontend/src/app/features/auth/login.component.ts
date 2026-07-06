@@ -1,24 +1,20 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
-import { extractMessage } from '../../core/api/http-error';
+import { RouterLink } from '@angular/router';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
+import { AuthViewModel } from './auth.viewmodel';
 
 @Component({
   selector: 'app-login',
   standalone: true,
+  providers: [AuthViewModel],
   imports: [ReactiveFormsModule, RouterLink, ActionButtonComponent],
   templateUrl: './login.component.html',
   styleUrl: './auth.component.css',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-
-  readonly error = signal<string | null>(null);
-  readonly loading = signal(false);
+  protected readonly vm = inject(AuthViewModel);
 
   readonly form = this.fb.nonNullable.group({
     username: ['', Validators.required],
@@ -30,14 +26,6 @@ export class LoginComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.loading.set(true);
-    this.error.set(null);
-    this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => this.router.navigate(['/tours']),
-      error: (err) => {
-        this.error.set(extractMessage(err, 'Login failed.'));
-        this.loading.set(false);
-      },
-    });
+    this.vm.login(this.form.getRawValue());
   }
 }

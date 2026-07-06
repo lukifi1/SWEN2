@@ -3,8 +3,8 @@
     <h2>Welcome back</h2>
     <p class="muted">Log in to manage your tours.</p>
 
-    @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
+    @if (vm.hasError()) {
+      <div class="alert alert-error">{{ vm.error() }}</div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()">
@@ -26,7 +26,7 @@
       </div>
 
       <app-action-button label="Login" type="submit" variant="primary"
-                         [fullWidth]="true" [disabled]="loading()">
+                         [fullWidth]="true" [disabled]="vm.loading()">
       </app-action-button>
     </form>
 
